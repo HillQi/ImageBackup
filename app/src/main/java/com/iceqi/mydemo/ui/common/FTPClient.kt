@@ -29,7 +29,6 @@ class FTPClient {
      */
     fun login(errHandle : (msg : String) -> Unit) : Boolean{
         try {
-//            if(ftp.isConnected)
             ftp.controlEncoding = "UTF-8"
             if(port > -1)
                 ftp.connect(ip, port)
@@ -86,11 +85,8 @@ class FTPClient {
             return
         }
 
-//        new String(name.getBytes("UTF-8"),"GBK")
-//        remote = String(remote.toByteArray(Charsets.UTF_8), "GBK")
         try {
             ftp.storeFile(remote, inStream)
-//            ftp.noop()
         }catch (t : java.lang.Exception){
             errHandle(t.toString())
         }
