@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/gallery_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent">
+
+    <ImageView
+        android:id="@+id/gallery_row_pic1"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="1dp"
+        android:scaleType="centerCrop"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"/>
+    <CheckBox
+        android:id="@+id/gallery_row_check1"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignRight="@+id/gallery_row_pic1"
+        android:layout_alignBottom="@+id/gallery_row_pic1"/>
+
+
+
+    <ImageView
+        android:id="@+id/gallery_row_pic2"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="1dp"
+        android:scaleType="centerCrop"
+        android:layout_toRightOf="@id/gallery_row_pic1"/>
+    <CheckBox
+        android:id="@+id/gallery_row_check2"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignRight="@+id/gallery_row_pic2"
+        android:layout_alignBottom="@+id/gallery_row_pic2"/>
+
+    <ImageView
+        android:id="@+id/gallery_row_pic3"
+        android:layout_width="80dp"
+        android:layout_margin="1dp"
+        android:layout_height="80dp"
+        android:scaleType="centerCrop"
+        android:layout_toRightOf="@id/gallery_row_pic2"/>
+    <CheckBox
+        android:id="@+id/gallery_row_check3"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignRight="@+id/gallery_row_pic3"
+        android:layout_alignBottom="@+id/gallery_row_pic3"/>
+
+    <ImageView
+        android:id="@+id/gallery_row_pic4"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        android:scaleType="centerCrop"
+        android:layout_toRightOf="@id/gallery_row_pic3"/>
+    <CheckBox
+        android:id="@+id/gallery_row_check4"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignRight="@+id/gallery_row_pic4"
+        android:layout_alignBottom="@+id/gallery_row_pic4"/>
+</RelativeLayout>

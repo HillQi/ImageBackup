@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/gallery_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent">
+
+    <ImageView
+        android:id="@+id/gallery_row_pic1"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="1dp"
+        android:scaleType="centerCrop" />
+    <CheckBox
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:checked="true"
+        android:paddingLeft="-50dp" />
+
+
+
+    <ImageView
+        android:id="@+id/gallery_row_pic2"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="1dp"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:id="@+id/gallery_row_pic3"
+        android:layout_width="80dp"
+        android:layout_margin="1dp"
+        android:layout_height="80dp"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:id="@+id/gallery_row_pic4"
+        android:layout_width="80dp"
+        android:layout_margin="1dp"
+        android:layout_height="80dp"
+        android:scaleType="centerCrop" />
+</LinearLayout>

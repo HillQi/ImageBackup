@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/iceqi/Desktop/all/android/MyDemo/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.26197916666666665" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/MyDemo/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/MyDemo/app/src/main/res/layout/app_bar_main.xml" value="0.40293453724604966" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/MyDemo/app/src/main/res/layout/fragment_gallery.xml" value="0.25" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/MyDemo/app/src/main/res/layout/fragment_slideshow.xml" value="0.5429122468659595" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/MyDemo/app/src/main/res/layout/gallery_row.xml" value="0.33" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/MyDemo/app/src/main/res/layout/gallery_rowl.xml" value="0.22552083333333334" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/MyDemo/app/src/main/res/layout/image_display.xml" value="0.5915104740904079" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/MyDemo/app/src/main/res/layout/layout.xml" value="0.25794684731631057" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/MyDemo/app/src/main/res/layout/view_image.xml" value="0.2734375" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectPlainTextFileTypeManager">
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/iceqi/mydemo/ui/gallery/SecondFragment.kt" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
