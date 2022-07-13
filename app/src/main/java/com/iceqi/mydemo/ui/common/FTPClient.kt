@@ -84,7 +84,6 @@ class FTPClient {
             errHandle("not connected to server")
             return
         }
-
         try {
             ftp.storeFile(remote, inStream)
         }catch (t : java.lang.Exception){
