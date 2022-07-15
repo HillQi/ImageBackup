@@ -31,6 +31,7 @@ class ImagePageAdapter : PagerAdapter() {
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val v = ZoomImageView(ctx)
         imgs?.get(position)?.let { imageLoader.loadImage(v, it, false) }
+        v.tag = position
         container.addView(v)
 
         return v
@@ -39,7 +40,5 @@ class ImagePageAdapter : PagerAdapter() {
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         val v = `object` as ImageView
         container.removeView(v)
-
-//        super.destroyItem(container, position, `object`)
     }
 }

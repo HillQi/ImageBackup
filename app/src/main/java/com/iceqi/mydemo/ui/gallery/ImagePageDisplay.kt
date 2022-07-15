@@ -36,7 +36,7 @@ class ImagePageDisplay : AppCompatActivity() {
 
     inner class OnPageChangeListener : ViewPager.OnPageChangeListener{
         lateinit var view : ViewPager
-        private var curPage = -1
+        private var curPage = 0
         override fun onPageScrolled(
             position: Int,
             positionOffset: Float,
@@ -45,13 +45,12 @@ class ImagePageDisplay : AppCompatActivity() {
         }
 
         override fun onPageSelected(position: Int) {
-            if(curPage != -1){
-                val v = view.getChildAt(curPage) as ZoomImageView
-                v.resetScale()
-            }
-
-            curPage = position
             output("onPageSelected: $position")
+            output("curPage to reset scale: $curPage")
+            val v = view.findViewWithTag<ZoomImageView>(curPage)
+            v.resetScale()
+            curPage = position
+            output("curPage: $curPage")
         }
 
         override fun onPageScrollStateChanged(state: Int) {

@@ -56,8 +56,7 @@ class GalleryFragment : Fragment() {
 
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
     private var syncImage : SyncImage? = null
-
-
+    lateinit var imgs : Array<String>
 
 
     // This property is only valid between onCreateView and
@@ -417,17 +416,10 @@ class GalleryFragment : Fragment() {
     }
 
      fun displayImage(tag : ImageViewTag){
-         // TODO test only
-//        val intent = Intent(this.context, ImageDisplay::class.java).apply{
-//            // TODO test only
-//            var p = arrayOf(tag.path, tag.path, tag.path)
-//            putExtra(EXTRA_MSG_IMAGE_PATH, tag.path)
-//        }
-
          val intent = Intent(this.context, ImagePageDisplay::class.java).apply{
              // TODO test only
              var p = arrayOf(tag.path, tag.path, tag.path)
-             putExtra(EXTRA_MSG_IMAGE_PATH, p)
+             putExtra(EXTRA_MSG_IMAGE_PATH, imgs)
          }
 
          startActivity(intent)
@@ -438,7 +430,6 @@ class GalleryFragment : Fragment() {
 //         syn.start()
 
      }
-
 
     val longClickListener = LongClickListener()
     val clickListener = ClickListener()
@@ -545,6 +536,8 @@ class GalleryFragment : Fragment() {
 
         override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
             if(imageCursor != data) {
+                loadImgPath(data!!)
+
                 ic = -1
                 imageCursor?.close()
                 imageCursor = data
@@ -552,6 +545,19 @@ class GalleryFragment : Fragment() {
                 notifyDataSetChanged()
                 binding.imageList.scrollToPosition(0)
             }
+        }
+
+        private fun loadImgPath(data : Cursor){
+            val path = arrayOfNulls<String>(data.count)
+            if(path.isNotEmpty()){
+                data.moveToFirst()
+                while(!data.isAfterLast){
+                    path[data.position] = data.getString(0)
+                    data.moveToNext()
+                }
+            }
+
+            this@GalleryFragment.imgs = path as Array<String>
         }
 
         override fun onLoaderReset(loader: Loader<Cursor>) {
