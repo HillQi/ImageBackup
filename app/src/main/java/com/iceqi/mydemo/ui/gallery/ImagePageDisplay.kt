@@ -32,6 +32,10 @@ class ImagePageDisplay : AppCompatActivity() {
         val l = OnPageChangeListener()
         l.view = binding.imageViewPager
         binding.imageViewPager.addOnPageChangeListener(l)
+
+        binding.imageViewPager.setCurrentItem(
+            intent.getIntExtra(EXTRA_MSG_CURRENT_IMAGE_INDEX, 0),
+            false)
     }
 
     inner class OnPageChangeListener : ViewPager.OnPageChangeListener{
@@ -45,21 +49,12 @@ class ImagePageDisplay : AppCompatActivity() {
         }
 
         override fun onPageSelected(position: Int) {
-            output("onPageSelected: $position")
-            output("curPage to reset scale: $curPage")
-            val v = view.findViewWithTag<ZoomImageView>(curPage)
-            v.resetScale()
+            view.findViewWithTag<ZoomImageView>(curPage)?.resetScale()
             curPage = position
-            output("curPage: $curPage")
         }
 
         override fun onPageScrollStateChanged(state: Int) {
 
-        }
-
-
-        private fun output(o: String){
-            println("mine:: $o")
         }
     }
 

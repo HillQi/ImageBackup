@@ -42,6 +42,7 @@ import kotlin.math.roundToInt
 // check getCount multi times
 
 const val EXTRA_MSG_IMAGE_PATH = "com.iceqi.mydemo.ui.gallery.GalleryFragment.ImagePath"
+const val EXTRA_MSG_CURRENT_IMAGE_INDEX = "com.iceqi.mydemo.ui.gallery.GalleryFragment.ImageIndex"
 class GalleryFragment : Fragment() {
 
     private lateinit var galleryViewModel: GalleryViewModel
@@ -210,23 +211,6 @@ class GalleryFragment : Fragment() {
         super.onPrepareOptionsMenu(menu)
     }
 
-    fun getTagPath(view : View): String? {
-        return (view.tag as ImageViewTag).path
-    }
-
-    fun setTagPath(view : View, path : String?) {
-        (view.tag as ImageViewTag).path = path
-    }
-
-    fun getTagPosition(view : View) : Int{
-        return (view.tag as ImageViewTag).position
-    }
-
-    fun setTagPosition(view : View, position: Int){
-        (view.tag as ImageViewTag).position = position
-    }
-
-
     private val sortStatus = SortStatus()
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
@@ -385,7 +369,7 @@ class GalleryFragment : Fragment() {
                 return false
 
             multiSelMode = true
-            multiSelImgs.add(getTagPath(v)!!)
+            multiSelImgs.add((v.tag as ImageViewTag).path!!)
             imgAdapter.notifyDataSetChanged()
             return true
         }
@@ -397,8 +381,6 @@ class GalleryFragment : Fragment() {
             if(tag.path == null)
                 return
 
-            // TODO
-            // add: if not in multi sel mode then open the image when ImageView clicked
             if(multiSelMode){
                 if(multiSelImgs.contains(tag.path)){
                     multiSelImgs.remove(tag.path)
@@ -417,9 +399,8 @@ class GalleryFragment : Fragment() {
 
      fun displayImage(tag : ImageViewTag){
          val intent = Intent(this.context, ImagePageDisplay::class.java).apply{
-             // TODO test only
-             var p = arrayOf(tag.path, tag.path, tag.path)
              putExtra(EXTRA_MSG_IMAGE_PATH, imgs)
+             putExtra(EXTRA_MSG_CURRENT_IMAGE_INDEX, tag.position)
          }
 
          startActivity(intent)
@@ -480,37 +461,40 @@ class GalleryFragment : Fragment() {
             c.moveToPosition(p)
             var hasMore = true
             for(i in imgArray.indices){
+                val tag = imgArray[i].tag as ImageViewTag
                 if(!hasMore)
                     loadImageToView(null, imgArray[i])
                 else {
                     loadImageToView(c, imgArray[i])
+                    tag.position = c.position
                     hasMore = c.moveToNext()
                 }
 
                 if(multiSelMode)
-                    selArray[i].isChecked = multiSelImgs.contains(getTagPath(imgArray[i]))
+                    selArray[i].isChecked = multiSelImgs.contains(tag.path)
                 selArray[i].isVisible = multiSelMode
 
-                setTagPosition(imgArray[i], position)
+
             }
         }
 
         @RequiresApi(Build.VERSION_CODES.Q)
         @SuppressLint("Range")
         protected open fun loadImageToView(cursor : Cursor?, view : ImageView){
+            val t = view.tag as ImageViewTag
             if(cursor != null) {
                 var p = cursor.getString(0)
                 p = File(p).absolutePath
-                val tp = getTagPath(view)
+                val tp = t.path
                 if(tp != null && tp == p)
                     return
                 if(tp != null)
                     view.setImageBitmap(null)
 
-                setTagPath(view, p)
+                t.path = p
                 aImageLoader.loadImage(view, p, true)
             }else{
-               setTagPath(view, null)
+                t.path = null
                 view.setImageBitmap(null)
             }
         }
@@ -549,12 +533,10 @@ class GalleryFragment : Fragment() {
 
         private fun loadImgPath(data : Cursor){
             val path = arrayOfNulls<String>(data.count)
-            if(path.isNotEmpty()){
-                data.moveToFirst()
-                while(!data.isAfterLast){
-                    path[data.position] = data.getString(0)
-                    data.moveToNext()
-                }
+            data.moveToFirst()
+            for(i in path.indices){
+                path[i] = data.getString(0)
+                data.moveToNext()
             }
 
             this@GalleryFragment.imgs = path as Array<String>

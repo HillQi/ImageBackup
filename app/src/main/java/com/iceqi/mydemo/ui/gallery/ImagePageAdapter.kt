@@ -31,6 +31,7 @@ class ImagePageAdapter : PagerAdapter() {
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val v = ZoomImageView(ctx)
         imgs?.get(position)?.let { imageLoader.loadImage(v, it, false) }
+        // when scroll the image view will find the outing image with this tag to reset scale
         v.tag = position
         container.addView(v)
 
