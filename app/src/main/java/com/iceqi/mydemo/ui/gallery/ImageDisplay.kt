@@ -1,6 +1,5 @@
 package com.iceqi.mydemo.ui.gallery
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet

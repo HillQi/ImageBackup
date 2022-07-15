@@ -57,9 +57,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
     public ZoomImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         //记住，一定要把ScaleType设置成ScaleType.MATRIX，否则无法缩放
-        // TODO
         setScaleType(ScaleType.MATRIX);
-//        setScaleType(ScaleType.CENTER_INSIDE);
 
 
         scroller = new Scroller(context);
@@ -410,6 +408,13 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
         });
 
         mAnimator.start();
+    }
+
+    /**
+     * Reset image to min scale
+     */
+    public void resetScale(){
+        scaleAnimation(mInitScale, 0, 0);
     }
 
 

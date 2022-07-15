@@ -419,18 +419,24 @@ class GalleryFragment : Fragment() {
      fun displayImage(tag : ImageViewTag){
          // TODO test only
 //        val intent = Intent(this.context, ImageDisplay::class.java).apply{
+//            // TODO test only
+//            var p = arrayOf(tag.path, tag.path, tag.path)
 //            putExtra(EXTRA_MSG_IMAGE_PATH, tag.path)
 //        }
 
+         val intent = Intent(this.context, ImagePageDisplay::class.java).apply{
+             // TODO test only
+             var p = arrayOf(tag.path, tag.path, tag.path)
+             putExtra(EXTRA_MSG_IMAGE_PATH, p)
+         }
 
-//         startActivity(intent)
+         startActivity(intent)
 
 //         val syn = SyncImage()
 //         val f = File(tag.path)
 //         syn.setPath(f.parent)
 //         syn.start()
 
-         startActivity(Intent(this.context, ShowPopUp::class.java))
      }
 
 

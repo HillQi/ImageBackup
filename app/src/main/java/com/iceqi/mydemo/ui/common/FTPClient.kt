@@ -3,7 +3,6 @@ package com.iceqi.mydemo.ui.common
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTPReply
-import java.io.IOException
 import java.io.InputStream
 
 // Implement a common FTP client
@@ -14,7 +13,7 @@ class FTPClient {
     var password : String? = null
     var ftp : FTPClient = FTPClient()
 
-    protected var logSucc = false
+    protected var login = false
 
     /**
      * login FTP server.
@@ -47,7 +46,7 @@ class FTPClient {
             ftp.setFileType(FTP.BINARY_FILE_TYPE)
             ftp.enterLocalActiveMode()
 
-            logSucc = true
+            login = true
             return true
         }catch (e : Exception){
             if (ftp.isConnected)
@@ -61,7 +60,7 @@ class FTPClient {
      * To disconnect from FTP server. FTP client object is not reusable after this.
      */
     fun disconnect(){
-        logSucc = false
+        login = false
         ip = null
         port = -1
         username = null

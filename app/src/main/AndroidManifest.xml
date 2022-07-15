@@ -33,6 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.gallery.ImageDisplay" />
+        <activity android:name=".ui.gallery.ImagePageDisplay" />
     </application>
 
 </manifest>
