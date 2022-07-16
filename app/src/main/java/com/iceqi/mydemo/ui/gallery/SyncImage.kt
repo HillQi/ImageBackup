@@ -1,17 +1,14 @@
 package com.iceqi.mydemo.ui.gallery
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.view.Gravity
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.PopupWindow
-import android.widget.TextView
-import android.widget.Button
+import android.widget.*
 import com.iceqi.mydemo.ui.common.FTPClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
-import java.lang.Thread.sleep
 
 /**
  * To sync image with FTP server.
@@ -30,8 +27,9 @@ class SyncImage {
     private var cancelled = false
     private var popup : PopupWindow? = null
     // TODO read last uploaded image data
-    private var tmpLastModifyTime : Long = 0
+    private var lastModifyTime : Long = 0
     private var tv : TextView? = null
+    private lateinit var editor: SharedPreferences.Editor
 
 
     fun initView(){
@@ -89,18 +87,19 @@ class SyncImage {
         // TODO handle error msg
         var succ = true
         ftp.login { errMsg ->
-            output("login err: $errMsg")
+            Toast.makeText(ctx, errMsg, Toast.LENGTH_SHORT)
             succ = false
         }
 
         if(!succ)
             return
 
+        openDataStore()
         var files : Array<File>? = null
         when {
             localPath != null -> {
                 var root = File(localPath)
-                files = root.listFiles { f -> f.isFile && f.lastModified() > tmpLastModifyTime }
+                files = root.listFiles { f -> f.isFile && f.lastModified() > lastModifyTime }
                 files?.sortBy { it.lastModified() }
             }
             images != null -> {
@@ -124,27 +123,36 @@ class SyncImage {
      * Update last succeed sync image time.
      */
     private fun updateLastSyncTime(file: File): Unit {
-        // TODO
-        tmpLastModifyTime = file.lastModified()
+        lastModifyTime = file.lastModified()
+
+        editor.putLong("lastUploadedImageModifiedTime", lastModifyTime)
+        editor.commit()
+    }
+
+    private fun openDataStore(){
+        val setting = ctx?.getSharedPreferences("setting", Context.MODE_PRIVATE)
+        editor = setting!!.edit()
+
+        lastModifyTime = setting.getLong("lastUploadedImageModifiedTime", 0)
     }
 
     /**
      * upload images.
      */
     private fun uploadImages(files: Array<File>) {
-        // TODO
-        // handle each upload error
         for((i, f) in files.withIndex()) {
-            // TODO test only
             if(cancelled) return
             val s = f.inputStream()
-            ftp.upload(f.name, s) { msg -> output("upload err: $msg") }
+            ftp.upload(f.name, s) { msg ->
+                Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show()
+                SyncImage@this.cancelled = true
+            }
+            if(cancelled) return
             try {
                 s.close()
             }catch (e : Exception){
 
             }
-//            sleep(200)
             updateUI(i, files.size)
             updateLastSyncTime(f)
         }
@@ -154,7 +162,6 @@ class SyncImage {
      * Update UI
      */
     private fun updateUI(finished: Int, total: Int): Unit {
-        // TODO
         tv?.post(Runnable { tv?.text = (finished * 100 / total).toString() })
     }
 
@@ -162,7 +169,6 @@ class SyncImage {
      * Cancel upload
      */
     private fun onCancel(): Unit {
-        // TODO
         this.cancelled = true
     }
 
