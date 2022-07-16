@@ -105,11 +105,8 @@ class SyncImage {
             }
             images != null -> {
                 files = arrayOfNulls<File>(images!!.size) as Array<File>?
-                for(i in images!!.indices){
-                    val f = File(images!![i])
-                    if(f.isFile && f.lastModified() > tmpLastModifyTime)
-                        files?.set(i, f)
-                }
+                for(i in images!!.indices)
+                    files?.set(i, File(images!![i]))
 
                 files?.sortBy { it?.lastModified() }
             }

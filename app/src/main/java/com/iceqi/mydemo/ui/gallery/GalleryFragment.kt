@@ -43,6 +43,7 @@ import kotlin.math.roundToInt
 
 const val EXTRA_MSG_IMAGE_PATH = "com.iceqi.mydemo.ui.gallery.GalleryFragment.ImagePath"
 const val EXTRA_MSG_CURRENT_IMAGE_INDEX = "com.iceqi.mydemo.ui.gallery.GalleryFragment.ImageIndex"
+const val EXTRA_MSG_CURRENT_SELECTED_IMAGES = "com.iceqi.mydemo.ui.gallery.GalleryFragment.SelectedImages"
 class GalleryFragment : Fragment() {
 
     private lateinit var galleryViewModel: GalleryViewModel
@@ -113,21 +114,6 @@ class GalleryFragment : Fragment() {
             }
             return@setOnKeyListener false
         }
-
-
-//        try {
-//            read(withNTLMCredentials(SingletonContext.getInstance()))
-//        }catch (t : Throwable){
-//            Log.e("", "", t)
-//        }
-
-//        CoroutineScope(Job() + Dispatchers.IO).launch() out@{
-//            try {
-//                read(withNTLMCredentials(SingletonContext.getInstance()))
-//            }catch (t : Throwable){
-//                Log.e("", "me:: ", t)
-//            }
-//        }
 
         return binding.root
     }
@@ -217,9 +203,13 @@ class GalleryFragment : Fragment() {
             0 -> sortStatus.setSort(sortStatus.SortByDate)
             1 -> sortStatus.setSort(sortStatus.SortByName)
             2 -> {
-                        LoaderManager.getInstance(this@GalleryFragment).restartLoader(2, null, UploadTask())
-                        return true
-                    }
+                    var t = UploadTask()
+                    if(multiSelMode)
+                        upload(multiSelImgs.toTypedArray())
+                    else
+                        LoaderManager.getInstance(this@GalleryFragment).restartLoader(2, null, t)
+                    return true
+                }
             else -> return super.onOptionsItemSelected(item)
         }
 
@@ -360,9 +350,6 @@ class GalleryFragment : Fragment() {
 
     }
 
-    // TODO
-    // add: in multi sel mode listen to 'back' to exit multi sel mode
-
     inner class LongClickListener () : View.OnLongClickListener{
         override fun onLongClick(v: View): Boolean {
             if(v == null)
@@ -393,7 +380,6 @@ class GalleryFragment : Fragment() {
             else{
                 displayImage(tag)
             }
-
         }
     }
 
@@ -404,12 +390,6 @@ class GalleryFragment : Fragment() {
          }
 
          startActivity(intent)
-
-//         val syn = SyncImage()
-//         val f = File(tag.path)
-//         syn.setPath(f.parent)
-//         syn.start()
-
      }
 
     val longClickListener = LongClickListener()
@@ -473,8 +453,6 @@ class GalleryFragment : Fragment() {
                 if(multiSelMode)
                     selArray[i].isChecked = multiSelImgs.contains(tag.path)
                 selArray[i].isVisible = multiSelMode
-
-
             }
         }
 
@@ -578,6 +556,17 @@ class GalleryFragment : Fragment() {
             order)
     }
 
+    private fun upload(images : Array<String>){
+        syncImage = SyncImage()
+        syncImage?.ctx = context
+        syncImage?.images = images
+        syncImage?.scope = scope
+
+        syncImage?.initView()
+        syncImage?.start()
+
+        exitMultiSelMode()
+    }
     inner class UploadTask : LoaderManager.LoaderCallbacks<Cursor> {
 
         @RequiresApi(Build.VERSION_CODES.O)
@@ -587,33 +576,13 @@ class GalleryFragment : Fragment() {
         override fun onLoadFinished(p0: Loader<Cursor>, data: Cursor?) {
             if(data == null)
                 return
-            // upload with SMB
-//            scope.launch() out@{
-//                uploadWithSMB(data)
-//            }
-
-            // upload with FTP
-            uploadWithFTP(data)
-        }
-
-        private fun uploadWithFTP(data : Cursor){
-
             val fs = arrayOfNulls<String>(data.count)
             data.moveToFirst()
             do{
                 fs[data.position] = data.getString(0)
             }while(!data.isLast && data.moveToNext() )
             data.close()
-
-            syncImage = SyncImage()
-            syncImage?.ctx = this@GalleryFragment.context
-            syncImage?.images = fs as Array<String>
-            syncImage?.scope = scope
-
-            syncImage?.initView()
-            syncImage?.start()
-
-
+            this@GalleryFragment.upload(fs as Array<String>)
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
@@ -632,52 +601,12 @@ class GalleryFragment : Fragment() {
         }
 
         override fun onCreateLoader(p0: Int, p1: Bundle?): Loader<Cursor> {
-            return genCursorLoader(true, imgAdapter.albumTitle)
+                return genCursorLoader(true, imgAdapter.albumTitle)
         }
 
         override fun onLoaderReset(p0: Loader<Cursor>) {
-            TODO("Not yet implemented")
         }
 
     }
-
-//    open inner class AsyncImageLoader{
-//        private val view22Task = ConcurrentHashMap<ImageView, Job>();
-//        private val scope = CoroutineScope(Job() + Dispatchers.IO)
-//
-//        /**
-//         * stop loader and cleanup
-//         */
-//        fun stop(){
-//            scope.cancel()
-//        }
-//
-//        /**
-//         * add a load task
-//         */
-//        @RequiresApi(Build.VERSION_CODES.Q)
-//        fun loadImage(view : ImageView, path : String){
-//            view22Task[view]?.cancel()
-//
-//            val j = scope.launch() out@{
-//                try {
-//                    if (!isActive)
-//                        return@out
-//                        val b: Bitmap? = ThumbnailUtils.createImageThumbnail(
-//                            path,
-//                            MediaStore.Images.Thumbnails.MINI_KIND)
-//                        launch(Dispatchers.Main) {
-//                            if (isActive){
-//                                view.setImageBitmap(b)
-//                                view22Task.remove(view)
-//                            }
-//                        }
-//                }catch (t : Throwable){
-//                    Log.e(this.toString(), "Error while loading image: ${path}", t)
-//                }
-//            }
-//            view22Task[view] = j
-//        }
-//    }
 }
 
