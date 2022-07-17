@@ -197,16 +197,19 @@ class GalleryFragment : Fragment() {
     }
 
     private val sortStatus = SortStatus()
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             0 -> sortStatus.setSort(sortStatus.SortByDate)
             1 -> sortStatus.setSort(sortStatus.SortByName)
             2 -> {
-                    var t = UploadTask()
+
                     if(multiSelMode)
                         upload(multiSelImgs.toTypedArray())
-                    else
+                    else{
+                        var t = UploadTask()
                         LoaderManager.getInstance(this@GalleryFragment).restartLoader(2, null, t)
+                    }
                     return true
                 }
             else -> return super.onOptionsItemSelected(item)
@@ -574,17 +577,18 @@ class GalleryFragment : Fragment() {
         @RequiresApi(Build.VERSION_CODES.O)
         val smbOperator  = SmbOperator()
 
-        @RequiresApi(Build.VERSION_CODES.O)
+        @RequiresApi(Build.VERSION_CODES.R)
         override fun onLoadFinished(p0: Loader<Cursor>, data: Cursor?) {
-            if(data == null)
+            if(data == null || data.isClosed)
                 return
+
             val fs = arrayOfNulls<String>(data.count)
             data.moveToFirst()
             do{
                 fs[data.position] = data.getString(0)
             }while(!data.isLast && data.moveToNext() )
-            data.close()
             this@GalleryFragment.upload(fs as Array<String>)
+            LoaderManager.getInstance(this@GalleryFragment).destroyLoader(2)
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
