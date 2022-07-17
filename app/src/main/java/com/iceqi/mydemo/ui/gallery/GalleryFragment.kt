@@ -57,9 +57,8 @@ class GalleryFragment : Fragment() {
     private val multiSelImgs = HashSet<String>()
 
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
-    private var syncImage : SyncImage? = null
+    lateinit var syncImage : SyncImage
     lateinit var imgs : Array<String>
-
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -556,14 +555,17 @@ class GalleryFragment : Fragment() {
             order)
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun upload(images : Array<String>){
         syncImage = SyncImage()
-        syncImage?.ctx = context
-        syncImage?.images = images
-        syncImage?.scope = scope
+        syncImage.ctx = requireContext()
+        syncImage.images = images
+        syncImage.scope = scope
+        syncImage.inflater = layoutInflater
+        syncImage.parent = requireView()
 
-        syncImage?.initView()
-        syncImage?.start()
+        syncImage.initView()
+        syncImage.start()
 
         exitMultiSelMode()
     }

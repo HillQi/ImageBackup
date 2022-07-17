@@ -28,4 +28,6 @@
     <string name="title_activity_main2">MainActivity2</string>
     <string name="title_activity_main22">Main2Activity2</string>
     <string name="title_activity_my_test">MyTest</string>
+
+    <string name="cancel">Cancel</string>
 </resources>
