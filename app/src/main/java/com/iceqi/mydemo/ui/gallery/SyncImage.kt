@@ -1,5 +1,6 @@
 package com.iceqi.mydemo.ui.gallery
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
@@ -8,6 +9,7 @@ import android.util.DisplayMetrics
 import android.view.*
 import android.widget.*
 import androidx.annotation.RequiresApi
+import com.iceqi.mydemo.R
 import com.iceqi.mydemo.databinding.SyncImagePopWindowsBinding
 import com.iceqi.mydemo.ui.common.FTPClient
 import kotlinx.coroutines.CoroutineScope
@@ -98,13 +100,13 @@ class SyncImage {
     /**
      * Start sync
      */
+    @SuppressLint("ResourceAsColor")
     fun start(){
         popup.showAtLocation(parent, Gravity.CENTER, 0, 0)
 
         scope?.launch {
             startUpload()
             clear()
-
             progress.post(Runnable { popup.dismiss() })
         }
     }
@@ -125,7 +127,7 @@ class SyncImage {
 
         var succ = true
         ftp.login { errMsg ->
-            Toast.makeText(ctx, errMsg, Toast.LENGTH_SHORT)
+            progress.post { Toast.makeText(ctx, errMsg, Toast.LENGTH_SHORT).show() }
             succ = false
         }
 
@@ -152,8 +154,6 @@ class SyncImage {
                 return
             }
         }
-
-
         uploadImages(files!!)
     }
 
@@ -182,7 +182,7 @@ class SyncImage {
             if(cancelled) return
             val s = f.inputStream()
             ftp.upload(f.name, s) { msg ->
-                Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show()
+                progress.post { Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show() }
                 SyncImage@this.cancelled = true
             }
             if(cancelled) return
