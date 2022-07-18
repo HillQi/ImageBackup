@@ -54,7 +54,7 @@ class GalleryFragment : Fragment() {
     private var _binding: FragmentGalleryBinding? = null
     private val aImageLoader = AsyncImageLoader()
     private val strUp = "       ↑"
-    private val strDown = "     ↓"
+    private val strDown = "       ↓"
     // Marks if the gallery view in multi select mode
     private var multiSelMode : Boolean = false
     // Holds path all multi selected images
@@ -316,6 +316,10 @@ class GalleryFragment : Fragment() {
         var albumTitle : String? = null
         private var imageCursor: Cursor? = null
 
+        init{
+            super.setHasStableIds(true)
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
             val i = LayoutInflater.from(parent.context)
             val b = GalleryRowBinding.inflate(i, parent, false)
@@ -361,11 +365,17 @@ class GalleryFragment : Fragment() {
             for(i in imgArray.indices){
                 val tag = imgArray[i].tag as ImageViewTag
                 if(!hasMore) {
-                    loadImageToView(null, imgArray[i])
+                    tag.path = null
+                    imgArray[i].setImageBitmap(null)
                     selArray[i].isVisible = false
                     tag.position = -1
                 }else {
-                    loadImageToView(c, imgArray[i])
+                    val p = c.getString(0)
+                    if(tag.path == null
+                        || tag.path?.let { p.compareTo(it) } != 0) {
+                        tag.path = p
+                        aImageLoader.loadImage(imgArray[i], tag.path!!, true)
+                    }
                     tag.position = c.position
                     hasMore = c.moveToNext()
                     selArray[i].isVisible = multiSelMode
@@ -376,25 +386,8 @@ class GalleryFragment : Fragment() {
             }
         }
 
-        @RequiresApi(Build.VERSION_CODES.Q)
-        @SuppressLint("Range")
-        protected open fun loadImageToView(cursor : Cursor?, view : ImageView){
-            val t = view.tag as ImageViewTag
-            if(cursor != null) {
-                var p = cursor.getString(0)
-                p = File(p).absolutePath
-                val tp = t.path
-                if(tp != null && tp == p)
-                    return
-                if(tp != null)
-                    view.setImageBitmap(null)
-
-                t.path = p
-                aImageLoader.loadImage(view, p, true)
-            }else{
-                t.path = null
-                view.setImageBitmap(null)
-            }
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
         }
 
         private var ic = -1
