@@ -133,9 +133,9 @@ class GalleryFragment : Fragment() {
 
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
             var t = if(position == 0)
-                null
-            else
-                albumsAdapter.getItemText(position)
+                        null
+                    else
+                        albumsAdapter.getItemText(position)
             if(binding.albums.tag as? String != t){
                 exitMultiSelMode()
                 binding.albums.tag = t
@@ -154,15 +154,18 @@ class GalleryFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    private fun setColor(str : String) : SpannableString{
-        val s = SpannableString(str)
 
-        s.setSpan(ForegroundColorSpan(Color.WHITE),
+    private fun setColor(str : String, enable : Boolean) : SpannableString{
+        val s = SpannableString(str)
+        var color = if(enable)
+                        Color.WHITE
+                    else
+                        Color.GRAY
+        s.setSpan(ForegroundColorSpan(color),
             0,
             s.length,
             0
         )
-
         return s
     }
 
@@ -184,14 +187,18 @@ class GalleryFragment : Fragment() {
                 strDown
         }
 
-        menu[0].title = setColor(bt)
-        menu[1].title = setColor(bn)
-        menu[2].title = setColor(upload)
+
+
 
         if(multiSelMode) {
             menu[0].isEnabled = false
             menu[1].isEnabled = false
         }
+        menu[2].isEnabled = binding.albums.selectedItemPosition != 0
+
+        menu[0].title = setColor(bt, menu[0].isEnabled)
+        menu[1].title = setColor(bn, menu[1].isEnabled)
+        menu[2].title = setColor(upload, menu[2].isEnabled)
 
         super.onPrepareOptionsMenu(menu)
     }
@@ -354,11 +361,12 @@ class GalleryFragment : Fragment() {
 
     inner class LongClickListener () : View.OnLongClickListener{
         override fun onLongClick(v: View): Boolean {
-            if(v == null)
+            if(v == null || binding.albums.selectedItemPosition == 0)
                 return false
 
+            var path: String? = (v.tag as ImageViewTag).path ?: return false
             multiSelMode = true
-            multiSelImgs.add((v.tag as ImageViewTag).path!!)
+            multiSelImgs.add(path!!)
             imgAdapter.notifyDataSetChanged()
             return true
         }
@@ -409,16 +417,20 @@ class GalleryFragment : Fragment() {
             b.galleryRow.layoutParams = lp
 
             var ivh = ImageViewHolder(b)
-            ivh.v1.setOnLongClickListener(longClickListener)
+            val listener = if(binding.albums.selectedItemPosition == 0)
+                                longClickListener
+                            else
+                                null
+            ivh.v1.setOnLongClickListener(listener)
             ivh.v1.setOnClickListener(clickListener)
             ivh.c1.setOnClickListener(clickListener)
-            ivh.v2.setOnLongClickListener(longClickListener)
+            ivh.v2.setOnLongClickListener(listener)
             ivh.v2.setOnClickListener(clickListener)
             ivh.c2.setOnClickListener(clickListener)
-            ivh.v3.setOnLongClickListener(longClickListener)
+            ivh.v3.setOnLongClickListener(listener)
             ivh.v3.setOnClickListener(clickListener)
             ivh.c3.setOnClickListener(clickListener)
-            ivh.v4.setOnLongClickListener(longClickListener)
+            ivh.v4.setOnLongClickListener(listener)
             ivh.v4.setOnClickListener(clickListener)
             ivh.c4.setOnClickListener(clickListener)
 
@@ -444,17 +456,18 @@ class GalleryFragment : Fragment() {
             var hasMore = true
             for(i in imgArray.indices){
                 val tag = imgArray[i].tag as ImageViewTag
-                if(!hasMore)
+                if(!hasMore) {
                     loadImageToView(null, imgArray[i])
-                else {
+                    selArray[i].isVisible = false
+                }else {
                     loadImageToView(c, imgArray[i])
                     tag.position = c.position
                     hasMore = c.moveToNext()
+                    selArray[i].isVisible = multiSelMode
                 }
 
                 if(multiSelMode)
                     selArray[i].isChecked = multiSelImgs.contains(tag.path)
-                selArray[i].isVisible = multiSelMode
             }
         }
 

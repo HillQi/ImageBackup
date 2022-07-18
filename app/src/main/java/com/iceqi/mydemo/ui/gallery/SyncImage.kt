@@ -25,8 +25,6 @@ import java.io.File
 class SyncImage {
 
     lateinit var ctx : Context
-    // TODO to support multi folders
-    var localPath : String? = null
     var images : Array<String>? = null
     var scope : CoroutineScope? = null
     lateinit var inflater : LayoutInflater
@@ -39,7 +37,7 @@ class SyncImage {
     private lateinit var progress : ProgressBar
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var binding: SyncImagePopWindowsBinding
-
+//    private var localPath : String? = null
 
     @RequiresApi(Build.VERSION_CODES.R)
     fun initView(){
@@ -134,14 +132,13 @@ class SyncImage {
         if(!succ)
             return
 
-        openDataStore()
         var files : Array<File>? = null
         when {
-            localPath != null -> {
-                var root = File(localPath)
-                files = root.listFiles { f -> f.isFile && f.lastModified() > lastModifyTime }
-                files?.sortBy { it.lastModified() }
-            }
+//            localPath != null -> {
+//                var root = File(localPath)
+//                files = root.listFiles { f -> f.isFile && f.lastModified() > lastModifyTime }
+//                files?.sortBy { it.lastModified() }
+//            }
             images != null -> {
                 files = arrayOfNulls<File>(images!!.size) as Array<File>?
                 for(i in images!!.indices)
@@ -154,6 +151,7 @@ class SyncImage {
                 return
             }
         }
+        openDataStore(files?.get(0)?.parent!!)
         uploadImages(files!!)
     }
 
@@ -167,11 +165,14 @@ class SyncImage {
         editor.commit()
     }
 
-    private fun openDataStore(){
-        val setting = ctx.getSharedPreferences("setting", Context.MODE_PRIVATE)
+    /**
+     * param: file Specify the folder for which to open configuration
+     */
+    private fun openDataStore(folderPath : String){
+        val path = "folderSetting:$folderPath"
+        val setting = ctx.getSharedPreferences("folderSetting", Context.MODE_PRIVATE)
+        lastModifyTime = setting!!.getLong("lastUploadedImageModifiedTime", 0)
         editor = setting!!.edit()
-
-        lastModifyTime = setting.getLong("lastUploadedImageModifiedTime", 0)
     }
 
     /**
