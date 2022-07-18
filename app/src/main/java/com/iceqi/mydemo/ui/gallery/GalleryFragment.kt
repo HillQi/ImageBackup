@@ -1,9 +1,7 @@
 package com.iceqi.mydemo.ui.gallery
 
 import android.Manifest
-import android.R.attr.*
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -13,12 +11,12 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.*
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.CheckBox
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -31,19 +29,25 @@ import com.iceqi.mydemo.R
 import com.iceqi.mydemo.databinding.FragmentGalleryBinding
 import com.iceqi.mydemo.databinding.GalleryRowBinding
 import com.iceqi.mydemo.ui.common.AsyncImageLoader
-import com.iceqi.mydemo.ui.common.java.ShowPopUp
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import java.io.File
-import java.util.*
-import kotlin.collections.HashSet
-import kotlin.math.roundToInt
+import kotlin.Array
+import kotlin.Boolean
+import kotlin.Int
+import kotlin.Long
+import kotlin.String
+import kotlin.apply
+import kotlin.arrayOf
+import kotlin.arrayOfNulls
 
 
 // check getCount multi times
 
 const val EXTRA_MSG_IMAGE_PATH = "com.iceqi.mydemo.ui.gallery.GalleryFragment.ImagePath"
 const val EXTRA_MSG_CURRENT_IMAGE_INDEX = "com.iceqi.mydemo.ui.gallery.GalleryFragment.ImageIndex"
-const val EXTRA_MSG_CURRENT_SELECTED_IMAGES = "com.iceqi.mydemo.ui.gallery.GalleryFragment.SelectedImages"
 class GalleryFragment : Fragment() {
 
     private lateinit var galleryViewModel: GalleryViewModel
@@ -57,7 +61,7 @@ class GalleryFragment : Fragment() {
     private val multiSelImgs = HashSet<String>()
 
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
-    lateinit var syncImage : SyncImage
+    private lateinit var syncImage : SyncImage
     lateinit var imgs : Array<String>
 
     // This property is only valid between onCreateView and
@@ -76,10 +80,13 @@ class GalleryFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         galleryViewModel = ViewModelProvider(this)[GalleryViewModel ::class.java]
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
         binding.imageList.adapter = imgAdapter
+        albumsAdapter.resources = resources
+        albumsAdapter.applicatoinContext = requireActivity().applicationContext
+        albumsAdapter.albums = binding.albums
         binding.albums.adapter = albumsAdapter
 
         binding.albums.onItemSelectedListener = OnAlbumSelected()
@@ -117,10 +124,7 @@ class GalleryFragment : Fragment() {
         return binding.root
     }
 
-    fun output(msg: String?) {
-        Log.d("me::", msg!!)
-    }
-
+    @SuppressLint("NotifyDataSetChanged")
     private fun exitMultiSelMode(){
         multiSelMode = false
         multiSelImgs.clear()
@@ -132,7 +136,7 @@ class GalleryFragment : Fragment() {
         }
 
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            var t = if(position == 0)
+            val t = if(position == 0)
                         null
                     else
                         albumsAdapter.getItemText(position)
@@ -157,7 +161,7 @@ class GalleryFragment : Fragment() {
 
     private fun setColor(str : String, enable : Boolean) : SpannableString{
         val s = SpannableString(str)
-        var color = if(enable)
+        val color = if(enable)
                         Color.WHITE
                     else
                         Color.GRAY
@@ -172,9 +176,9 @@ class GalleryFragment : Fragment() {
     override fun onPrepareOptionsMenu(menu: Menu) {
         var bn = resources.getString(R.string.menu_gallery_sort_by_name)
         var bt = resources.getString(R.string.menu_gallery_sort_by_time)
-        var upload = resources.getString(R.string.menu_gallery_upload)
+        val upload = resources.getString(R.string.menu_gallery_upload)
 
-        if(sortStatus.sortBy == sortStatus.SortByName){
+        if(sortStatus.sortBy == sortStatus.sortByName){
             bn += if(sortStatus.isSortByDesc)
                 strUp
             else
@@ -186,9 +190,6 @@ class GalleryFragment : Fragment() {
             else
                 strDown
         }
-
-
-
 
         if(multiSelMode) {
             menu[0].isEnabled = false
@@ -207,14 +208,14 @@ class GalleryFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            0 -> sortStatus.setSort(sortStatus.SortByDate)
-            1 -> sortStatus.setSort(sortStatus.SortByName)
+            0 -> sortStatus.setSort(sortStatus.sortByDate)
+            1 -> sortStatus.setSort(sortStatus.sortByName)
             2 -> {
 
                     if(multiSelMode)
                         upload(multiSelImgs.toTypedArray())
                     else{
-                        var t = UploadTask()
+                        val t = UploadTask()
                         LoaderManager.getInstance(this@GalleryFragment).restartLoader(2, null, t)
                     }
                     return true
@@ -227,10 +228,10 @@ class GalleryFragment : Fragment() {
     }
 
     inner class SortStatus{
-        val SortByName = "SortByName"
-        val SortByDate = "SortByDate"
+        val sortByName = "SortByName"
+        val sortByDate = "SortByDate"
 
-        var sortBy : String? = SortByDate
+        var sortBy : String? = sortByDate
         var isSortByDesc = true
 
         fun setSort(sortBy : String){
@@ -249,11 +250,6 @@ class GalleryFragment : Fragment() {
         super.onDestroyView()
     }
 
-    fun dpToPx(dp: Int): Int {
-        val density: Float = resources.displayMetrics.density
-        return (dp.toFloat() * density).roundToInt()
-    }
-
     inner class ImageViewHolder(view: GalleryRowBinding) : RecyclerView.ViewHolder(view.root) {
         val c1 = view.galleryRowCheck1
         val c2 = view.galleryRowCheck2
@@ -266,107 +262,18 @@ class GalleryFragment : Fragment() {
         val v4: ImageView = view.galleryRowPic4
     }
 
-    inner class ImageViewTag(val image : ImageView, val check : CheckBox, var path : String?, var position : Int){
+    inner class ImageViewTag(val image : ImageView, val check : CheckBox, var path : String?, var position : Int)
 
-    }
-
-    inner class  AlbumsAdapter : BaseAdapter(), LoaderManager.LoaderCallbacks<Cursor> {
-        var items : Array<String> = arrayOf()
-        override fun getCount(): Int {
-            return items.size + 1
-        }
-
-        override fun getItem(position: Int): Any {
-            if(position == 0)
-                return ""
-            else
-                return items[position-1]
-        }
-
-        override fun getItemId(position: Int): Long {
-            return position.toLong()
-        }
-
-        private fun genItemView(context : Context) : LinearLayout{
-            var t : TextView = TextView(context)
-            val params = ViewGroup.MarginLayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                dpToPx(30)
-            )
-            params.setMargins(20, 0, 0, 0)
-            t.layoutParams = params
-            t.gravity = Gravity.CENTER
-
-            val l = LinearLayout(context)
-            l.layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            l.addView(t)
-
-            return l
-        }
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            var l : LinearLayout = if(convertView == null)
-                genItemView(parent!!.context)
-            else
-                convertView as LinearLayout
-
-            val t : TextView = l.getChildAt(0) as TextView
-            if(t.tag == null || t.tag as Int != position) {
-                t.tag = position
-                t.text = getItemText(position)
-            }
-
-            if(binding.albums.tag == t.text)
-                l.background = ResourcesCompat.getDrawable(resources, R.color.cardview_shadow_start_color, null)
-            return l
-        }
-
-        fun getItemText (position : Int): String{
-            return if (position == 0)
-                resources.getString(R.string.pic_album_all)
-            else
-                items[position - 1]
-        }
-
-        override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
-            return CursorLoader(
-                activity!!.applicationContext,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                arrayOf(MediaStore.Images.Media.BUCKET_DISPLAY_NAME),
-                null,
-                null,
-                null)
-        }
-
-        @SuppressLint("Range")
-        override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
-            if(data == null)
-                return
-            data.moveToFirst()
-            val h = HashSet<String>()
-            do{
-                h.add(data.getString(0))
-            }while(!data.isLast && data.moveToNext() )
-            items = h.toArray(items)
-
-            notifyDataSetChanged()
-        }
-
-        override fun onLoaderReset(loader: Loader<Cursor>) {
-        }
-
-    }
-
-    inner class LongClickListener () : View.OnLongClickListener{
+    inner class LongClickListener : View.OnLongClickListener{
+        @SuppressLint("NotifyDataSetChanged")
         override fun onLongClick(v: View): Boolean {
-            if(v == null || binding.albums.selectedItemPosition == 0)
-                return false
+            if( binding.albums.selectedItemPosition == 0
+                || v.tag == null)
+                return true
 
-            var path: String? = (v.tag as ImageViewTag).path ?: return false
+            val path: String = (v.tag as ImageViewTag).path ?: return false
             multiSelMode = true
-            multiSelImgs.add(path!!)
+            multiSelImgs.add(path)
             imgAdapter.notifyDataSetChanged()
             return true
         }
@@ -374,7 +281,7 @@ class GalleryFragment : Fragment() {
 
     inner class ClickListener : View.OnClickListener{
         override fun onClick(v: View) {
-            var tag = v.tag as ImageViewTag
+            val tag = v.tag as ImageViewTag
             if(tag.path == null)
                 return
 
@@ -407,20 +314,17 @@ class GalleryFragment : Fragment() {
     open inner class ImageAdapter : RecyclerView.Adapter<ImageViewHolder>(),
         LoaderManager.LoaderCallbacks<Cursor> {
         var albumTitle : String? = null
-        var imageCursor: Cursor? = null
+        private var imageCursor: Cursor? = null
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
             val i = LayoutInflater.from(parent.context)
-            var b = GalleryRowBinding.inflate(i, parent, false)
+            val b = GalleryRowBinding.inflate(i, parent, false)
             val lp = b.galleryRow.layoutParams
             lp.width = parent.width
             b.galleryRow.layoutParams = lp
 
-            var ivh = ImageViewHolder(b)
-            val listener = if(binding.albums.selectedItemPosition == 0)
-                                longClickListener
-                            else
-                                null
+            val ivh = ImageViewHolder(b)
+            val listener = longClickListener
             ivh.v1.setOnLongClickListener(listener)
             ivh.v1.setOnClickListener(clickListener)
             ivh.c1.setOnClickListener(clickListener)
@@ -459,6 +363,7 @@ class GalleryFragment : Fragment() {
                 if(!hasMore) {
                     loadImageToView(null, imgArray[i])
                     selArray[i].isVisible = false
+                    tag.position = -1
                 }else {
                     loadImageToView(c, imgArray[i])
                     tag.position = c.position
@@ -492,12 +397,12 @@ class GalleryFragment : Fragment() {
             }
         }
 
-        var ic = -1
+        private var ic = -1
         override fun getItemCount(): Int {
             if(ic != -1)
                 return ic
 
-            var c = imageCursor?.count ?: 0
+            val c = imageCursor?.count ?: 0
             if(c == 0)
                 return 0
             ic = c / 4
@@ -511,6 +416,7 @@ class GalleryFragment : Fragment() {
             return genCursorLoader(false, albumTitle)
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
             if(imageCursor != data) {
                 loadImgPath(data!!)
@@ -544,15 +450,15 @@ class GalleryFragment : Fragment() {
         var selArgs : Array<String>? = null
         if(albumTitle != null){
             selection = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + "=?"
-            selArgs = arrayOf(albumTitle!!)
+            selArgs = arrayOf(albumTitle)
         }
 
-        var order : String? = null
+        var order: String
 
         if(isForUpload){
             order = MediaStore.Images.Media.DATE_TAKEN + " desc"
         }else{
-            order = if(sortStatus.sortBy == sortStatus.SortByDate)
+            order = if(sortStatus.sortBy == sortStatus.sortByDate)
                 MediaStore.Images.Media.DATE_TAKEN
             else
                 MediaStore.Images.Media.DISPLAY_NAME
@@ -586,10 +492,6 @@ class GalleryFragment : Fragment() {
         exitMultiSelMode()
     }
     inner class UploadTask : LoaderManager.LoaderCallbacks<Cursor> {
-
-        @RequiresApi(Build.VERSION_CODES.O)
-        val smbOperator  = SmbOperator()
-
         @RequiresApi(Build.VERSION_CODES.R)
         override fun onLoadFinished(p0: Loader<Cursor>, data: Cursor?) {
             if(data == null || data.isClosed)
@@ -604,28 +506,12 @@ class GalleryFragment : Fragment() {
             LoaderManager.getInstance(this@GalleryFragment).destroyLoader(2)
         }
 
-        @RequiresApi(Build.VERSION_CODES.O)
-        private fun uploadWithSMB(data : Cursor) {
-            smbOperator.init()
-            data.moveToFirst()
-            do{
-                // TODO catch IOException
-                // TODO add popup dialog show progress
-                var p = data.getString(0)
-                if(!smbOperator.copyFile(File(p), false)){
-                    break
-                }
-            }while(!data.isLast && data.moveToNext() )
-            data.close()
-        }
-
         override fun onCreateLoader(p0: Int, p1: Bundle?): Loader<Cursor> {
                 return genCursorLoader(true, imgAdapter.albumTitle)
         }
 
         override fun onLoaderReset(p0: Loader<Cursor>) {
         }
-
     }
 }
 
