@@ -3,13 +3,11 @@ package com.iceqi.mydemo.ui.gallery
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.*
 import androidx.annotation.RequiresApi
-import com.iceqi.mydemo.R
 import com.iceqi.mydemo.databinding.SyncImagePopWindowsBinding
 import com.iceqi.mydemo.ui.common.FTPClient
 import kotlinx.coroutines.CoroutineScope
@@ -144,6 +142,7 @@ class SyncImage {
                 for(i in images!!.indices)
                     files?.set(i, File(images!![i]))
 
+
                 files?.sortBy { it?.lastModified() }
             }
             else -> {
@@ -151,7 +150,13 @@ class SyncImage {
                 return
             }
         }
-        openDataStore(files?.get(0)?.parent!!)
+        val p = files?.get(0)?.parent!!
+        openDataStore(p)
+        files = files?.filter { f -> f.lastModified() > lastModifyTime }.toTypedArray()
+        if(files.isEmpty())
+            return
+
+        ftp.makeDirectories(p)
         uploadImages(files!!)
     }
 
@@ -169,8 +174,9 @@ class SyncImage {
      * param: file Specify the folder for which to open configuration
      */
     private fun openDataStore(folderPath : String){
-        val path = "folderSetting:$folderPath"
-        val setting = ctx.getSharedPreferences("folderSetting", Context.MODE_PRIVATE)
+        var path = folderPath.replace("/", "")
+        path = "folderSetting:$path"
+        val setting = ctx.getSharedPreferences(path, Context.MODE_PRIVATE)
         lastModifyTime = setting!!.getLong("lastUploadedImageModifiedTime", 0)
         editor = setting!!.edit()
     }
@@ -196,6 +202,8 @@ class SyncImage {
             updateLastSyncTime(f)
         }
     }
+
+
 
     /**
      * Update UI

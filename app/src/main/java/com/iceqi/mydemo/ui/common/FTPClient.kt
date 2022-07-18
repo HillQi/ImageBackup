@@ -91,6 +91,32 @@ class FTPClient {
     }
 
     /**
+     * Change work folder. If folder does not exist then try to create
+     * sequence folder.
+     *
+     * @return 'true' If change folder succeed or 'false' if not.
+     */
+    fun makeDirectories(path: String) : Boolean{
+        val folders = path.split("/")
+        if(folders != null && folders.isNotEmpty()){
+            for(s in folders){
+                if(s.isNotEmpty()){
+                    var succ = ftp.changeWorkingDirectory(s)
+                    if(!succ){
+                        succ = ftp.makeDirectory(s)
+                        if(succ)
+                            ftp.changeWorkingDirectory(s)
+                        else
+                            return false
+                    }
+                }
+            }
+        }
+
+        return true
+    }
+
+    /**
      * Notify server to keep client alive.
      */
     fun keepAlive(errHandle : (msg : String) -> Unit){
