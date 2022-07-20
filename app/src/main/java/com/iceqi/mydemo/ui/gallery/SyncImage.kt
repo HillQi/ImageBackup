@@ -3,13 +3,11 @@ package com.iceqi.mydemo.ui.gallery
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
-import android.util.DisplayMetrics
 import android.view.*
 import android.widget.*
-import androidx.annotation.RequiresApi
 import com.iceqi.mydemo.databinding.SyncImagePopWindowsBinding
 import com.iceqi.mydemo.ui.common.FTPClient
+import com.iceqi.mydemo.ui.common.FTPConfigStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -105,15 +103,14 @@ class SyncImage {
         ftp.disconnect()
     }
 
-    private fun output(msg : String){
-        println("mine:: $msg")
-    }
     private fun startUpload(){
-        // TODO load ftp cfg
-        ftp.ip = "192.1.1.193"
-        ftp.port = 21
-        ftp.username = "ice"
-        ftp.password = "n"
+        val cfgStore = FTPConfigStore()
+        cfgStore.ctx = ctx
+        val cfg = cfgStore.open()
+        ftp.ip = cfg!!.ip
+        ftp.port = cfg.port.toInt()
+        ftp.username = cfg.user
+        ftp.password = cfg.password
 
         var succ = true
         ftp.login { errMsg ->
