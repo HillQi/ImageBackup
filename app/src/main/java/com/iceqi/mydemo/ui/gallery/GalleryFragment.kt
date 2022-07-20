@@ -154,6 +154,7 @@ class GalleryFragment : Fragment() {
         menu.add(0,0,0,"")
         menu.add(0,1,0,"")
         menu.add(0,2,0,"")
+        menu.add(0,3,0,"")
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -177,6 +178,7 @@ class GalleryFragment : Fragment() {
         var bn = resources.getString(R.string.menu_gallery_sort_by_name)
         var bt = resources.getString(R.string.menu_gallery_sort_by_time)
         val upload = resources.getString(R.string.menu_gallery_upload)
+        val setFtp =resources.getString(R.string.menu_gallery_setup_ftp)
 
         if(sortStatus.sortBy == sortStatus.sortByName){
             bn += if(sortStatus.isSortByDesc)
@@ -200,6 +202,7 @@ class GalleryFragment : Fragment() {
         menu[0].title = setColor(bt, menu[0].isEnabled)
         menu[1].title = setColor(bn, menu[1].isEnabled)
         menu[2].title = setColor(upload, menu[2].isEnabled)
+        menu[3].title = setColor(setFtp, menu[3].isEnabled)
 
         super.onPrepareOptionsMenu(menu)
     }
@@ -220,6 +223,7 @@ class GalleryFragment : Fragment() {
                     }
                     return true
                 }
+            3 -> setupFTP()
             else -> return super.onOptionsItemSelected(item)
         }
 
@@ -308,6 +312,16 @@ class GalleryFragment : Fragment() {
 
          startActivity(intent)
      }
+
+    private fun setupFTP(){
+        val ftp = FTPServerSetup()
+        ftp.ctx = requireContext()
+        ftp.inflater = layoutInflater
+        ftp.parent = requireView()
+
+        ftp.initView()
+        ftp.start()
+    }
 
     val longClickListener = LongClickListener()
     val clickListener = ClickListener()

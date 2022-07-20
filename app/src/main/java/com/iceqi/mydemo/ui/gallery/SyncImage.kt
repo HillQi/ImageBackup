@@ -37,7 +37,6 @@ class SyncImage {
     private lateinit var binding: SyncImagePopWindowsBinding
 //    private var localPath : String? = null
 
-    @RequiresApi(Build.VERSION_CODES.R)
     fun initView(){
 //          keep as demo
 //        val layout = LinearLayout(ctx)
@@ -77,13 +76,8 @@ class SyncImage {
 //            WindowManager.LayoutParams.MATCH_PARENT,
 //            WindowManager.LayoutParams.WRAP_CONTENT)
 
-        val metrics = DisplayMetrics()
-        ctx.display?.getMetrics(metrics)
-
         binding = SyncImagePopWindowsBinding.inflate(inflater)
         popup = PopupWindow(ctx)
-//        popup.height = WindowManager.LayoutParams.WRAP_CONTENT
-//        popup.width = metrics.widthPixels * 2 / 3
         popup.height = WindowManager.LayoutParams.MATCH_PARENT
         popup.width = WindowManager.LayoutParams.MATCH_PARENT
         popup.contentView = binding.root
@@ -132,11 +126,6 @@ class SyncImage {
 
         var files : Array<File>? = null
         when {
-//            localPath != null -> {
-//                var root = File(localPath)
-//                files = root.listFiles { f -> f.isFile && f.lastModified() > lastModifyTime }
-//                files?.sortBy { it.lastModified() }
-//            }
             images != null -> {
                 files = arrayOfNulls<File>(images!!.size) as Array<File>?
                 for(i in images!!.indices)
