@@ -15,8 +15,10 @@
 
     <string name="menu_gallery_sort_by_name">Sort by name</string>
     <string name="menu_gallery_sort_by_time">Sort by time</string>
-    <string name="menu_gallery_upload">upload photos</string>
-    <string name="menu_gallery_setup_ftp">setup FTP server</string>
+    <string name="menu_gallery_upload">Upload photos</string>
+    <string name="menu_gallery_setup_ftp">Setup FTP server</string>
+    <string name="menu_gallery_upload_folder">Add folder to upload</string>
+    <string name="menu_gallery_do_not_upload_folder">Remove folder from upload</string>
     <string name="title_activity_main">MainActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -29,6 +31,7 @@
     <string name="password">password</string>
     <string name="save">save</string>
     <string name="correct_ip_address">Please correct IP address.</string>
+    <string name="please_setup_ftp_server">Please setup FTP server</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>

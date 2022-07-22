@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.view.*
 import android.widget.*
+import com.iceqi.mydemo.R
 import com.iceqi.mydemo.databinding.SyncImagePopWindowsBinding
 import com.iceqi.mydemo.ui.common.FTPClient
 import com.iceqi.mydemo.ui.common.FTPConfigStore
@@ -107,7 +108,12 @@ class SyncImage {
         val cfgStore = FTPConfigStore()
         cfgStore.ctx = ctx
         val cfg = cfgStore.open()
-        ftp.ip = cfg!!.ip
+        if(cfg == null) {
+            progress.post{ Toast.makeText(ctx, R.string.please_setup_ftp_server, Toast.LENGTH_SHORT).show() }
+            return
+        }
+
+        ftp.ip = cfg.ip
         ftp.port = cfg.port.toInt()
         ftp.username = cfg.user
         ftp.password = cfg.password

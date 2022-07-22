@@ -7,7 +7,7 @@
         <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-<<<<<<< HEAD
+        <option name="gradleJvm" value="Embedded JDK" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -15,9 +15,6 @@
             <option value="$PROJECT_DIR$/lib" />
           </set>
         </option>
-=======
-        <option name="gradleJvm" value="11" />
->>>>>>> 3beb268 (add FTP config UI)
       </GradleProjectSettings>
     </option>
   </component>

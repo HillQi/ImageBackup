@@ -29,6 +29,7 @@ import com.iceqi.mydemo.R
 import com.iceqi.mydemo.databinding.FragmentGalleryBinding
 import com.iceqi.mydemo.databinding.GalleryRowBinding
 import com.iceqi.mydemo.ui.common.AsyncImageLoader
+import com.iceqi.mydemo.ui.common.UPLoadTaskConfigStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -67,9 +68,12 @@ class GalleryFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private var imgAdapter: ImageAdapter = ImageAdapter()
+    private var albumsAdapter : AlbumsAdapter = AlbumsAdapter()
+    // marks the folder path of first image in the list
+    lateinit private var curFolderPath : String
 
-    var imgAdapter: ImageAdapter = ImageAdapter()
-    var albumsAdapter : AlbumsAdapter = AlbumsAdapter()
+
     override fun onDestroy() {
         scope.cancel()
         super.onDestroy()
@@ -137,9 +141,9 @@ class GalleryFragment : Fragment() {
 
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
             val t = if(position == 0)
-                        null
-                    else
-                        albumsAdapter.getItemText(position)
+                null
+            else
+                albumsAdapter.getItemText(position)
             if(binding.albums.tag as? String != t){
                 exitMultiSelMode()
                 binding.albums.tag = t
@@ -155,17 +159,21 @@ class GalleryFragment : Fragment() {
         menu.add(0,1,0,"")
         menu.add(0,2,0,"")
         menu.add(0,3,0,"")
+        menu.add(0,4,0,"")
 
         super.onCreateOptionsMenu(menu, inflater)
     }
 
 
+    private fun setColor(resourceId : Int, enable: Boolean) : SpannableString{
+        return setColor(resources.getString(resourceId), enable)
+    }
     private fun setColor(str : String, enable : Boolean) : SpannableString{
         val s = SpannableString(str)
         val color = if(enable)
-                        Color.WHITE
-                    else
-                        Color.GRAY
+            Color.WHITE
+        else
+            Color.GRAY
         s.setSpan(ForegroundColorSpan(color),
             0,
             s.length,
@@ -177,9 +185,6 @@ class GalleryFragment : Fragment() {
     override fun onPrepareOptionsMenu(menu: Menu) {
         var bn = resources.getString(R.string.menu_gallery_sort_by_name)
         var bt = resources.getString(R.string.menu_gallery_sort_by_time)
-        val upload = resources.getString(R.string.menu_gallery_upload)
-        val setFtp =resources.getString(R.string.menu_gallery_setup_ftp)
-
         if(sortStatus.sortBy == sortStatus.sortByName){
             bn += if(sortStatus.isSortByDesc)
                 strUp
@@ -201,33 +206,79 @@ class GalleryFragment : Fragment() {
 
         menu[0].title = setColor(bt, menu[0].isEnabled)
         menu[1].title = setColor(bn, menu[1].isEnabled)
-        menu[2].title = setColor(upload, menu[2].isEnabled)
-        menu[3].title = setColor(setFtp, menu[3].isEnabled)
+        menu[2].title = setColor(R.string.menu_gallery_upload, menu[2].isEnabled)
+        menu[3].title = setColor(R.string.menu_gallery_setup_ftp, menu[3].isEnabled)
+        menu[4].isVisible = binding.albums.selectedItemPosition != 0
+        if(menu[4].isVisible) {
+            if(isFolderAddedToUploadTask(curFolderPath)) {
+                menu[4].title = setColor(R.string.menu_gallery_do_not_upload_folder, menu[4].isEnabled)
+                menu[4].setOnMenuItemClickListener {
+                                                        removeFolderFromUploadTask(curFolderPath)
+                                                        true
+                }
+            }else {
+                menu[4].title = setColor(R.string.menu_gallery_upload_folder, menu[4].isEnabled)
+                menu[4].setOnMenuItemClickListener {
+                                                        addFolderToUploadTask(curFolderPath)
+                                                        true
+                }
+            }
+        }
 
         super.onPrepareOptionsMenu(menu)
+    }
+
+    private fun uploadTaskConfigAccess(folder: String, tasks: ((folder: String, cfgStore : UPLoadTaskConfigStore) -> Unit)?) : Boolean{
+        val cfg = UPLoadTaskConfigStore()
+        cfg.ctx = requireContext()
+        val p = cfg.open()
+        return if(tasks == null){
+            if(p == null)
+                false
+            else
+                !p.none { it.compareTo(folder) == 0}
+        }else {
+            tasks(folder, cfg)
+            return true
+        }
+    }
+    private fun isFolderAddedToUploadTask(folder : String) : Boolean{
+        return uploadTaskConfigAccess(folder, null)
+    }
+
+    private fun addFolderToUploadTask(folder : String){
+        uploadTaskConfigAccess(folder){folder, cfg -> cfg.addPath(folder)}
+    }
+
+    private fun removeFolderFromUploadTask(folder : String){
+        uploadTaskConfigAccess(folder){folder, cfg -> cfg.removePath(folder)}
     }
 
     private val sortStatus = SortStatus()
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            0 -> sortStatus.setSort(sortStatus.sortByDate)
-            1 -> sortStatus.setSort(sortStatus.sortByName)
+            0 -> {
+                    sortStatus.setSort(sortStatus.sortByDate)
+                    LoaderManager.getInstance(this@GalleryFragment).restartLoader(1, null, imgAdapter)
+            }
+            1 -> {
+                    sortStatus.setSort(sortStatus.sortByName)
+                    LoaderManager.getInstance(this@GalleryFragment).restartLoader(1, null, imgAdapter)
+            }
             2 -> {
 
-                    if(multiSelMode)
-                        upload(multiSelImgs.toTypedArray())
-                    else{
-                        val t = UploadTask()
-                        LoaderManager.getInstance(this@GalleryFragment).restartLoader(2, null, t)
-                    }
-                    return true
+                if(multiSelMode)
+                    upload(multiSelImgs.toTypedArray())
+                else{
+                    val t = UploadTask()
+                    LoaderManager.getInstance(this@GalleryFragment).restartLoader(2, null, t)
                 }
+            }
             3 -> setupFTP()
             else -> return super.onOptionsItemSelected(item)
         }
 
-        LoaderManager.getInstance(this@GalleryFragment).restartLoader(1, null, imgAdapter)
         return true
     }
 
@@ -304,14 +355,14 @@ class GalleryFragment : Fragment() {
         }
     }
 
-     fun displayImage(tag : ImageViewTag){
-         val intent = Intent(this.context, ImagePageDisplay::class.java).apply{
-             putExtra(EXTRA_MSG_IMAGE_PATH, imgs)
-             putExtra(EXTRA_MSG_CURRENT_IMAGE_INDEX, tag.position)
-         }
+    fun displayImage(tag : ImageViewTag){
+        val intent = Intent(this.context, ImagePageDisplay::class.java).apply{
+            putExtra(EXTRA_MSG_IMAGE_PATH, imgs)
+            putExtra(EXTRA_MSG_CURRENT_IMAGE_INDEX, tag.position)
+        }
 
-         startActivity(intent)
-     }
+        startActivity(intent)
+    }
 
     private fun setupFTP(){
         val ftp = FTPServerSetup()
@@ -385,6 +436,9 @@ class GalleryFragment : Fragment() {
                     tag.position = -1
                 }else {
                     val p = c.getString(0)
+                    if(c.position == 0)
+                        curFolderPath = File(p).parentFile.path
+
                     if(tag.path == null
                         || tag.path?.let { p.compareTo(it) } != 0) {
                         tag.path = p
@@ -514,7 +568,7 @@ class GalleryFragment : Fragment() {
         }
 
         override fun onCreateLoader(p0: Int, p1: Bundle?): Loader<Cursor> {
-                return genCursorLoader(true, imgAdapter.albumTitle)
+            return genCursorLoader(true, imgAdapter.albumTitle)
         }
 
         override fun onLoaderReset(p0: Loader<Cursor>) {
