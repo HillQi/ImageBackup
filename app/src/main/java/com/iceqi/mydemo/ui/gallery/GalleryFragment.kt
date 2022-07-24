@@ -29,20 +29,13 @@ import com.iceqi.mydemo.R
 import com.iceqi.mydemo.databinding.FragmentGalleryBinding
 import com.iceqi.mydemo.databinding.GalleryRowBinding
 import com.iceqi.mydemo.ui.common.AsyncImageLoader
+import com.iceqi.mydemo.ui.common.ImageUploadService
 import com.iceqi.mydemo.ui.common.UPLoadTaskConfigStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import java.io.File
-import kotlin.Array
-import kotlin.Boolean
-import kotlin.Int
-import kotlin.Long
-import kotlin.String
-import kotlin.apply
-import kotlin.arrayOf
-import kotlin.arrayOfNulls
 
 
 // check getCount multi times
@@ -155,11 +148,12 @@ class GalleryFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
-        menu.add(0,0,0,"")
-        menu.add(0,1,0,"")
-        menu.add(0,2,0,"")
-        menu.add(0,3,0,"")
-        menu.add(0,4,0,"")
+        menu.add(0,0,0,"sort by time")
+        menu.add(0,1,0,"sort by name")
+        menu.add(0,2,0,"upload photo")
+        menu.add(0,3,0,"setup FTP")
+        menu.add(0,4,0,"add to upload task")
+        menu.add(0,5,0,"start upload task")
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -224,6 +218,7 @@ class GalleryFragment : Fragment() {
                 }
             }
         }
+        menu[5].title = setColor(R.string.menu_gallery_start_batch_upload, menu[3].isEnabled)
 
         super.onPrepareOptionsMenu(menu)
     }
@@ -276,6 +271,7 @@ class GalleryFragment : Fragment() {
                 }
             }
             3 -> setupFTP()
+            5 -> context?.startService(Intent(context, ImageUploadService::class.java))
             else -> return super.onOptionsItemSelected(item)
         }
 

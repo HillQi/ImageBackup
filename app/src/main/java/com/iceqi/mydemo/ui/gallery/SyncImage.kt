@@ -9,6 +9,8 @@ import com.iceqi.mydemo.R
 import com.iceqi.mydemo.databinding.SyncImagePopWindowsBinding
 import com.iceqi.mydemo.ui.common.FTPClient
 import com.iceqi.mydemo.ui.common.FTPConfigStore
+import com.iceqi.mydemo.ui.common.ImageUploadTask
+import com.iceqi.mydemo.ui.common.TaskHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -19,11 +21,11 @@ import java.io.File
  *
  * Instance for this class should be one time only not reusable.
  */
-class SyncImage {
+class SyncImage : TaskHandler {
 
     lateinit var ctx : Context
-    var images : Array<String>? = null
-    var scope : CoroutineScope? = null
+    lateinit var images : Array<String>
+    lateinit var scope : CoroutineScope
     lateinit var inflater : LayoutInflater
     lateinit var parent : View
 
@@ -34,6 +36,7 @@ class SyncImage {
     private lateinit var progress : ProgressBar
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var binding: SyncImagePopWindowsBinding
+    private lateinit var imgTask : ImageUploadTask
 //    private var localPath : String? = null
 
     fun initView(){
@@ -82,7 +85,7 @@ class SyncImage {
         popup.contentView = binding.root
         popup.isOutsideTouchable =false
 
-        binding.btnCancel.setOnClickListener { onCancel() }
+        binding.btnCancel.setOnClickListener { imgTask.cancel() }
         progress = binding.progress
     }
 
@@ -93,122 +96,33 @@ class SyncImage {
     fun start(){
         popup.showAtLocation(parent, Gravity.CENTER, 0, 0)
 
-        scope?.launch {
+        scope.launch {
             startUpload()
-            clear()
-            progress.post(Runnable { popup.dismiss() })
         }
-    }
-
-    private fun clear(){
-        ftp.disconnect()
     }
 
     private fun startUpload(){
-        val cfgStore = FTPConfigStore()
-        cfgStore.ctx = ctx
-        val cfg = cfgStore.open()
-        if(cfg == null) {
-            progress.post{ Toast.makeText(ctx, R.string.please_setup_ftp_server, Toast.LENGTH_SHORT).show() }
-            return
-        }
-
-        ftp.ip = cfg.ip
-        ftp.port = cfg.port.toInt()
-        ftp.username = cfg.user
-        ftp.password = cfg.password
-
-        var succ = true
-        ftp.login { errMsg ->
-            progress.post { Toast.makeText(ctx, errMsg, Toast.LENGTH_SHORT).show() }
-            succ = false
-        }
-
-        if(!succ)
-            return
-
-        var files : Array<File>? = null
-        when {
-            images != null -> {
-                files = arrayOfNulls<File>(images!!.size) as Array<File>?
-                for(i in images!!.indices)
-                    files?.set(i, File(images!![i]))
-
-
-                files?.sortBy { it?.lastModified() }
-            }
-            else -> {
-                clear()
-                return
-            }
-        }
-        val p = files?.get(0)?.parent!!
-        openDataStore(p)
-        files = files?.filter { f -> f.lastModified() > lastModifyTime }.toTypedArray()
-        if(files.isEmpty())
-            return
-
-        ftp.makeDirectories(p)
-        uploadImages(files!!)
+        imgTask = ImageUploadTask()
+        imgTask.ctx = ctx
+        imgTask.taskHandler = this
+        imgTask.setImages(images)
+        imgTask.uploadImages()
     }
 
-    /**
-     * Update last succeed sync image time.
-     */
-    private fun updateLastSyncTime(file: File): Unit {
-        lastModifyTime = file.lastModified()
-
-        editor.putLong("lastUploadedImageModifiedTime", lastModifyTime)
-        editor.commit()
-    }
-
-    /**
-     * param: file Specify the folder for which to open configuration
-     */
-    private fun openDataStore(folderPath : String){
-        var path = folderPath.replace("/", "")
-        path = "folderSetting:$path"
-        val setting = ctx.getSharedPreferences(path, Context.MODE_PRIVATE)
-        lastModifyTime = setting!!.getLong("lastUploadedImageModifiedTime", 0)
-        editor = setting!!.edit()
-    }
-
-    /**
-     * upload images.
-     */
-    private fun uploadImages(files: Array<File>) {
-        for((i, f) in files.withIndex()) {
-            if(cancelled) return
-            val s = f.inputStream()
-            ftp.upload(f.name, s) { msg ->
-                progress.post { Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show() }
-                SyncImage@this.cancelled = true
-            }
-            if(cancelled) return
-            try {
-                s.close()
-            }catch (e : Exception){
-
-            }
-            updateUI(i, files.size)
-            updateLastSyncTime(f)
+    override fun onError(msg: String) {
+        progress.post{
+            Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
         }
     }
 
-
-
-    /**
-     * Update UI
-     */
-    private fun updateUI(finished: Int, total: Int): Unit {
-        progress?.post(Runnable { progress.progress = finished * 100 / total})
+    override fun onProgress(finishedImgPos: Int, totalImgCount: Int) {
+        progress.post { progress.progress = finishedImgPos * 100 / totalImgCount }
     }
 
-    /**
-     * Cancel upload
-     */
-    private fun onCancel(): Unit {
-        this.cancelled = true
+    override fun onFinished() {
+        progress.post{
+            popup.dismiss()
+        }
     }
 
 }
