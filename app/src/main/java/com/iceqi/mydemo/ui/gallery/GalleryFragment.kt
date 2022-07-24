@@ -118,6 +118,7 @@ class GalleryFragment : Fragment() {
             return@setOnKeyListener false
         }
 
+        aImageLoader.cr = context?.contentResolver!!
         return binding.root
     }
 
@@ -438,7 +439,8 @@ class GalleryFragment : Fragment() {
                     if(tag.path == null
                         || tag.path?.let { p.compareTo(it) } != 0) {
                         tag.path = p
-                        aImageLoader.loadImage(imgArray[i], tag.path!!, true)
+                        imgArray[i].setImageBitmap(null)
+                        aImageLoader.loadImage(imgArray[i], tag.path!!, true, c.getLong(1))
                     }
                     tag.position = c.position
                     hasMore = c.moveToNext()
@@ -528,7 +530,7 @@ class GalleryFragment : Fragment() {
         return CursorLoader(
             requireActivity().applicationContext,
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            arrayOf(MediaStore.Images.Media.DATA),
+            arrayOf(MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID),
             selection,
             selArgs,
             order)
