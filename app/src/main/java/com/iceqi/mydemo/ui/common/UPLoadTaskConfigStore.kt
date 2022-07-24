@@ -69,11 +69,6 @@ class UPLoadTaskConfigStore{
             i -= 2
 
         var s = buf.removeRange(i, end)
-//        if(s.startsWith(";;"))
-//            s = s.subSequence(2, s.length)
-//        if(s.endsWith(";;"))
-//            s = s.subSequence(0, s.length-2)
-//        s = s.toString().replace(";;;;", ";;")
         store(s.toString())
         return true
     }
