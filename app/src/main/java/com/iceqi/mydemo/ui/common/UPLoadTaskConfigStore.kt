@@ -10,6 +10,9 @@ class UPLoadTaskConfigStore{
 
     private val keyPaths = "uploadFolders"
 
+    /**
+     * open data store and return a folder list those have been added.
+     */
     fun open() : List<String>? {
         setting = ctx.getSharedPreferences("uploadTaskInfo", Context.MODE_PRIVATE)
         editor = setting!!.edit()
@@ -17,6 +20,9 @@ class UPLoadTaskConfigStore{
         return getPaths()
     }
 
+    /**
+     * Get folder list those have been added.
+     */
     fun getPaths() : List<String>?{
         val v = setting.getString(keyPaths, "")!!
         return if(v.compareTo("") == 0)
@@ -25,6 +31,9 @@ class UPLoadTaskConfigStore{
             v.split(";;")
     }
 
+    /**
+     * add a folder path
+     */
     fun addPath(path : String){
         if(path == null || path.isEmpty())
             return
@@ -40,6 +49,9 @@ class UPLoadTaskConfigStore{
         editor.commit()
     }
 
+    /**
+     * remove a folder path
+     */
     fun removePath(path : String) : Boolean{
         if(path == null || path.isEmpty())
             return false
