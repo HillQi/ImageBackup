@@ -15,7 +15,7 @@ class ImageUploadService : Service(), TaskHandler{
     var cancelled = false
 
     private lateinit var imgTask : ImageUploadTask
-    private lateinit var scope : CoroutineScope
+    private var scope : CoroutineScope? = null
     private lateinit var job : Job
 
     /**
@@ -39,7 +39,7 @@ class ImageUploadService : Service(), TaskHandler{
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if(scope == null) {
             scope = CoroutineScope(Job() + Dispatchers.IO)
-            scope.launch {
+            scope?.launch {
 
                 val taskCfg = UPLoadTaskConfigStore()
                 taskCfg.ctx = applicationContext
