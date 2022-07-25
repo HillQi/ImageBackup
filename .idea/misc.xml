@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/drawable/scrollbar_theme.xml" value="0.1" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/drawable/scrollbar_theme2.xml" value="0.135" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/drawable/side_nav_bar.xml" value="0.1" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/activity_main.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/fragment_gallery.xml" value="0.1814814814814815" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/gallery_row.xml" value="0.4466666666666667" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/gallery_row2.xml" value="0.41354166666666664" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/gallery_row3.xml" value="0.41354166666666664" />
+      </map>
+    </option>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="11" project-jdk-type="JavaSDK" />
 </project>
