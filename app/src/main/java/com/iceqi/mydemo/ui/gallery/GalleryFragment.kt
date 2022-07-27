@@ -113,9 +113,8 @@ class GalleryFragment : Fragment() {
         binding.root.setOnKeyListener { _, keyCode, _ ->
             if (keyCode == KeyEvent.KEYCODE_BACK && multiSelMode) {
                 exitMultiSelMode()
-                return@setOnKeyListener true
             }
-            return@setOnKeyListener false
+            return@setOnKeyListener true
         }
 
         aImageLoader.cr = context?.contentResolver!!

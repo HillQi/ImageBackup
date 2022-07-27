@@ -7,7 +7,7 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="menu_home">Home</string>
+    <string name="menu_batch_upload_folders">batch upload folders</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
 
@@ -34,6 +34,9 @@
     <string name="correct_ip_address">Please correct IP address.</string>
     <string name="please_setup_ftp_server">Please setup FTP server.</string>
     <string name="ftp_login_failed">FTP server login failed.</string>
+    <string name="editing">Editing ...</string>
+    <string name="remove_from_batch">Remove</string>
+
 
 
     <string name="hello_first_fragment">Hello first fragment</string>

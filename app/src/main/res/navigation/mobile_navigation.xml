@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_gallery">
+    app:startDestination="@+id/nav_batch_upload_folders">
 
     <fragment
-        android:id="@+id/nav_home"
+        android:id="@+id/nav_batch_upload_folders"
         android:name="com.iceqi.mydemo.ui.home.HomeFragment"
-        android:label="@string/menu_home"
+        android:label="@string/menu_batch_upload_folders"
         tools:layout="@layout/fragment_home" />
 
     <fragment

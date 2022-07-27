@@ -15,11 +15,14 @@ class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
     private var _binding: FragmentHomeBinding? = null
+    private val folderListTag = "folderListTag"
+    private val imageListTag = "imageListTag"
+    private var curTag : String? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-
+    private var curFragment : Fragment? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,10 +35,39 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
 
         val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+//        homeViewModel.text.observe(viewLifecycleOwner, Observer {
+//            textView.text = it
+//        })
+        binding.textHome.setOnClickListener {
+            when(curTag){
+                null -> curTag = folderListTag
+                folderListTag -> curTag = imageListTag
+                imageListTag -> curTag = folderListTag
+            }
+
+            var f: Fragment? = childFragmentManager.findFragmentByTag(curTag)
+            if (f == null)
+                f = genChild(curTag!!)
+            childFragmentManager.beginTransaction().let{
+                for(c in childFragmentManager.fragments)
+                    it.hide(c)
+                if(f.isAdded)
+                    it.show(f)
+                else
+                    it.add(R.id.container_fragment, f)
+                it.commit()
+            }
+        }
+
+        binding.textHome.callOnClick()
         return root
+    }
+
+    private fun genChild(tag : String) : Fragment{
+        if(tag == folderListTag)
+            return FolderList()
+        else
+            return ImageList()
     }
 
     override fun onDestroyView() {

@@ -99,13 +99,14 @@ class  AlbumsAdapter : BaseAdapter(), LoaderManager.LoaderCallbacks<Cursor> {
         if(data == null)
             return
         data.moveToFirst()
-        val h = HashSet<String>()
-        do{
-            h.add(data.getString(0))
-        }while(!data.isLast && data.moveToNext() )
-        items = h.toArray(items)
-
-        notifyDataSetChanged()
+        if(data.isFirst) {
+            val h = HashSet<String>()
+            do {
+                h.add(data.getString(0))
+            } while (!data.isLast && data.moveToNext())
+            items = h.toArray(items)
+            notifyDataSetChanged()
+        }
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {

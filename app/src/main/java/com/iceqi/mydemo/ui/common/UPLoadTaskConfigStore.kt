@@ -58,18 +58,37 @@ class UPLoadTaskConfigStore{
 
         val p = setting.getString(keyPaths, "")!!
         var buf = StringBuffer(p)
-        var i = buf.indexOf(path)
-        if(i == -1)
+        var b = removeSection(buf, path)
+        store(buf.toString())
+        return true
+    }
+
+    fun removePath(paths : Array<String>) : Boolean{
+        if(paths == null || paths.isEmpty())
             return false
 
-        var end = i+path.length
-        if(end < buf.length)
+        val p = setting.getString(keyPaths, "")!!
+        var buf = StringBuffer(p)
+        for(s in paths)
+            removeSection(buf, s)
+        store(buf.toString())
+        return true
+
+
+    }
+
+    private fun removeSection(from : StringBuffer, section : String) : StringBuffer{
+
+        var i = from.indexOf(section)
+        if(i == -1)
+            return from
+
+        var end = i+section.length
+        if(end < from.length)
             end += 2
         else if(i > 0)
             i -= 2
 
-        var s = buf.removeRange(i, end)
-        store(s.toString())
-        return true
+        return from.delete(i, end)
     }
 }
