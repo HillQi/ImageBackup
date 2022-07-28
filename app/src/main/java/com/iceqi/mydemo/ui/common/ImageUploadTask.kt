@@ -72,10 +72,9 @@ class ImageUploadTask {
         if(!cancelled)
             cancelled = !init()
         if(!cancelled) {
-            if(!ftp.login { msg ->taskHandler.onError(msg)}){
-                cancelled = true
-                taskHandler.onError(ctx.resources.getString(R.string.ftp_login_failed))
-            }
+            ftp.login { msg ->
+                    cancelled = true
+                    taskHandler.onError(ctx.resources.getString(R.string.ftp_login_failed))}
         }
         if(!cancelled) {
             ftp.makeDirectories(files[0].parent)

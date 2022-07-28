@@ -15,16 +15,20 @@ import com.iceqi.mydemo.ui.common.UPLoadTaskConfigStore
 
 class FolderList : Fragment() {
 
+    lateinit var openFolder : (folderPath : String) -> Unit
+
     private var binding: FolderListViewBinding? = null
     private var multiSelMode : Boolean = false
     private val selFolderIndex = HashSet<Int>()
+    private val fa = FolderAdapter()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FolderListViewBinding.inflate(inflater, container, false)
-        val fa = FolderAdapter()
+
         updateAdapter(fa)
 
         fa.longClickListener = OnLongClick()
@@ -38,8 +42,9 @@ class FolderList : Fragment() {
                 if (keyCode == KeyEvent.KEYCODE_BACK && multiSelMode) {
                     exitMultiSelMode()
                     fa.notifyDataSetChanged()
-                }
-                return@setOnKeyListener true
+                    return@setOnKeyListener true
+                }else
+                    return@setOnKeyListener false
             }
             it.remove.setOnClickListener {
                 val uCfg = UPLoadTaskConfigStore()
@@ -55,9 +60,6 @@ class FolderList : Fragment() {
                 fa.notifyDataSetChanged()
             }
         }
-
-
-
         return binding!!.root
     }
 
@@ -67,13 +69,8 @@ class FolderList : Fragment() {
         adapter.folders = ultc.open()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
     private fun exitMultiSelMode(){
         multiSelMode = false
-//        binding?.editing?.visibility = View.INVISIBLE
         binding?.remove?.visibility = View.INVISIBLE
 
         selFolderIndex.clear()
@@ -81,8 +78,6 @@ class FolderList : Fragment() {
 
     private fun beginMultiSelMode(){
         multiSelMode = true
-
-//        binding?.editing?.visibility = View.VISIBLE
         binding?.remove?.visibility = View.VISIBLE
     }
 
@@ -94,14 +89,14 @@ class FolderList : Fragment() {
                 if (selFolderIndex.size == 0)
                     exitMultiSelMode()
             }else{
-
+                val i = (v?.tag as FolderListRowHolder).getIndex(v)
+                openFolder(fa.getFolderPath(i))
             }
         }
     }
 
     inner class OnLongClick : View.OnLongClickListener {
         override fun onLongClick(v: View?): Boolean {
-            output("onLongClick")
             if(!multiSelMode){
                 beginMultiSelMode()
                 updateOnSelection(v!!)
@@ -186,6 +181,9 @@ class FolderList : Fragment() {
             return h
         }
 
+        fun getFolderPath(position : Int) : String{
+            return folders?.get(position)!!
+        }
         override fun onBindViewHolder(holder: FolderListRowHolder, position: Int) {
             var pos = 2 * position
             var p : String? = folders!![pos].split("/").last()
@@ -221,14 +219,5 @@ class FolderList : Fragment() {
 
             return s
         }
-
-        fun output(a : Any){
-            println("mine:: $a")
-        }
     }
 }
-
-fun output(a : Any){
-    println("mine:: ${a.toString()}")
-}
-

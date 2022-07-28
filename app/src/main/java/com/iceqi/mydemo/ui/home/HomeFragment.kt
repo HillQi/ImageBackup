@@ -1,6 +1,7 @@
 package com.iceqi.mydemo.ui.home
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +23,6 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private var curFragment : Fragment? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,41 +33,47 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        val fl = FolderList()
 
-        val textView: TextView = binding.textHome
-//        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-//            textView.text = it
-//        })
-        binding.textHome.setOnClickListener {
-            when(curTag){
-                null -> curTag = folderListTag
-                folderListTag -> curTag = imageListTag
-                imageListTag -> curTag = folderListTag
+        fl.openFolder = { folder ->
+            val f = loadFragment(imageListTag, null)
+            var il : ImageList? = null
+            if(f == null){
+                il = ImageList()
+                il.curFolderPath = folder
+                il.onGoBack = {
+                    loadFragment(folderListTag, null)
+                }
+            }else {
+                il = f as ImageList
+                il.curFolderPath = folder
+                il.refreshData()
             }
-
-            var f: Fragment? = childFragmentManager.findFragmentByTag(curTag)
-            if (f == null)
-                f = genChild(curTag!!)
-            childFragmentManager.beginTransaction().let{
-                for(c in childFragmentManager.fragments)
-                    it.hide(c)
-                if(f.isAdded)
-                    it.show(f)
-                else
-                    it.add(R.id.container_fragment, f)
-                it.commit()
-            }
+            loadFragment(imageListTag, il)
         }
-
-        binding.textHome.callOnClick()
+        loadFragment(folderListTag, fl)
         return root
     }
 
-    private fun genChild(tag : String) : Fragment{
-        if(tag == folderListTag)
-            return FolderList()
-        else
-            return ImageList()
+    private fun loadFragment(tag : String, fragment : Fragment? = null) : Fragment?{
+        var f: Fragment? = fragment
+        if(f == null)
+            f = childFragmentManager.findFragmentByTag(tag)
+        if(f == null)
+            return null
+
+        childFragmentManager.beginTransaction().let{
+            for(c in childFragmentManager.fragments)
+                if(c != f && !c.isHidden)
+                    it.hide(c)
+            if(f!!.isAdded)
+                it.show(f)
+            else
+                it.add(R.id.container_fragment, f, tag)
+            it.commit()
+        }
+
+        return f
     }
 
     override fun onDestroyView() {

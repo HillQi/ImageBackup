@@ -18,20 +18,14 @@
         android:nestedScrollingEnabled="true"
         android:popupBackground="@color/cardview_dark_background" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/image_list"
+    <FrameLayout
+        android:id="@+id/container_fragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/albums"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/albums"
-        android:scrollbars="vertical"
-        android:scrollbarStyle="insideOverlay"
-        android:scrollbarSize="20dp"
-        android:scrollbarThumbVertical="@drawable/scrollbar_theme"
-        android:fastScrollEnabled="true"
-        app:fastScrollVerticalThumbDrawable="@drawable/scrollbar_theme"
-        app:fastScrollVerticalTrackDrawable="@drawable/scrollbar_theme"
         />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

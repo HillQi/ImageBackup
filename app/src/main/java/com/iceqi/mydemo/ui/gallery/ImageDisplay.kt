@@ -2,14 +2,12 @@ package com.iceqi.mydemo.ui.gallery
 
 import android.os.Build
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.MenuItem
-import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.iceqi.mydemo.R
 import com.iceqi.mydemo.databinding.ImageDisplayBinding
 import com.iceqi.mydemo.ui.common.AsyncImageLoader
+import com.iceqi.mydemo.ui.home.EXTRA_MSG_IMAGE_PATH
 import java.lang.RuntimeException
 
 class ImageDisplay : AppCompatActivity() {

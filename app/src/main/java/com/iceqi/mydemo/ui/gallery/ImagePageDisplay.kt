@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.iceqi.mydemo.databinding.ImagePageDisplayBinding
 import com.iceqi.mydemo.ui.common.java.ZoomImageView
+import com.iceqi.mydemo.ui.home.EXTRA_MSG_IMAGE_PATH
+import com.iceqi.mydemo.ui.home.EXTRA_MSG_CURRENT_IMAGE_INDEX
 
 class ImagePageDisplay : AppCompatActivity() {
 

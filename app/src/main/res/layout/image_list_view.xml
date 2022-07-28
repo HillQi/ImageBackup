@@ -5,18 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/image_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Image list fragment"/>
-
-
-    </LinearLayout>
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="insideOverlay"
+        android:scrollbarSize="20dp"
+        android:scrollbarThumbVertical="@drawable/scrollbar_theme"
+        android:fastScrollEnabled="true"
+        app:fastScrollVerticalThumbDrawable="@drawable/scrollbar_theme"
+        app:fastScrollVerticalTrackDrawable="@drawable/scrollbar_theme"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

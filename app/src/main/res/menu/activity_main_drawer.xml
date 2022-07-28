@@ -5,13 +5,15 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_batch_upload_folders"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_batch_upload_folders" />
-        <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_gallery" />
+
+        <item
+            android:id="@+id/nav_batch_upload_folders"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/menu_batch_upload_folders" />
+
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"

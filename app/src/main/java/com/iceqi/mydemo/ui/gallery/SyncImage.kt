@@ -28,6 +28,8 @@ class SyncImage : TaskHandler {
     lateinit var scope : CoroutineScope
     lateinit var inflater : LayoutInflater
     lateinit var parent : View
+    var onFinished : ((succeed : Boolean) -> Unit)? = null
+    var isFailed = false
 
     private val ftp : FTPClient = FTPClient()
     private var cancelled = false
@@ -107,9 +109,12 @@ class SyncImage : TaskHandler {
         imgTask.taskHandler = this
         imgTask.setImages(images)
         imgTask.uploadImages()
+        if(onFinished != null)
+            onFinished?.let { it(!isFailed) }
     }
 
     override fun onError(msg: String) {
+        isFailed = true
         progress.post{
             Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
         }
@@ -120,9 +125,7 @@ class SyncImage : TaskHandler {
     }
 
     override fun onFinished() {
-        progress.post{
-            popup.dismiss()
-        }
+        progress.post{popup.dismiss()}
     }
 
 }
