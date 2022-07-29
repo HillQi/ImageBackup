@@ -41,6 +41,8 @@ import java.io.File
 
 // check getCount multi times
 
+
+
 class GalleryFragment : Fragment() {
 
     private lateinit var galleryViewModel: GalleryViewModel
