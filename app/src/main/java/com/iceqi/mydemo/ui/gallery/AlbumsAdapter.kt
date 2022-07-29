@@ -105,6 +105,7 @@ class  AlbumsAdapter : BaseAdapter(), LoaderManager.LoaderCallbacks<Cursor> {
                 h.add(data.getString(0))
             } while (!data.isLast && data.moveToNext())
             items = h.toArray(items)
+            items.sort()
             notifyDataSetChanged()
         }
     }

@@ -25,7 +25,6 @@ import com.iceqi.mydemo.ui.common.AsyncImageLoader
 import com.iceqi.mydemo.ui.gallery.ImagePageDisplay
 import java.io.File
 
-// TODO on first load image not showed
 const val EXTRA_MSG_IMAGE_PATH = "com.iceqi.mydemo.ui.gallery.ImagePath"
 const val EXTRA_MSG_CURRENT_IMAGE_INDEX = "com.iceqi.mydemo.ui.gallery.ImageIndex"
 class ImageList : Fragment() {
