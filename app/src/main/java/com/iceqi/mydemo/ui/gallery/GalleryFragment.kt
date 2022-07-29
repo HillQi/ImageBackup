@@ -83,25 +83,28 @@ class GalleryFragment : Fragment() {
         )
         if(b == PackageManager.PERMISSION_GRANTED ){
             LoaderManager.getInstance(this).initLoader(2, null, albumsAdapter)
+            loadImageListView()
         }else if (b == PackageManager.PERMISSION_DENIED ){
             val l = registerForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) {
                 if (it) {
                     LoaderManager.getInstance(this).initLoader(2, null, albumsAdapter)
+                    loadImageListView()
                 }
             }
             l.launch("android.permission.WRITE_EXTERNAL_STORAGE")
         }
+        return binding.root
+    }
 
+    private fun loadImageListView(){
         setHasOptionsMenu(true)
         imageList.enableMultiSelMode = true
         childFragmentManager.beginTransaction().let {
             it.add(R.id.container_fragment, imageList)
             it.commit()
         }
-
-        return binding.root
     }
 
 //    override fun onResume() {
