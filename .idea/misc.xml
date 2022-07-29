@@ -3,14 +3,22 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/drawable/folder_list_background.xml" value="0.124" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/drawable/folder_list_selected_background.xml" value="0.115" />
         <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/drawable/scrollbar_theme.xml" value="0.1" />
         <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/drawable/scrollbar_theme2.xml" value="0.135" />
         <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/drawable/side_nav_bar.xml" value="0.1" />
         <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/activity_main.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/app_bar_main.xml" value="0.5792400370713624" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/folder_list_row.xml" value="0.5546875" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/folder_list_view.xml" value="0.327774882751433" />
         <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/fragment_gallery.xml" value="0.1814814814814815" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/fragment_home.xml" value="0.420443587270974" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/fragment_home1.xml" value="0.34754402224281744" />
         <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/gallery_row.xml" value="0.4466666666666667" />
         <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/gallery_row2.xml" value="0.41354166666666664" />
         <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/layout/gallery_row3.xml" value="0.41354166666666664" />
+        <entry key="..\:/Users/iceqi/Desktop/all/android/gitHub/ImageBackup/app/src/main/res/menu/activity_main_drawer.xml" value="0.5461538461538461" />
       </map>
     </option>
   </component>
