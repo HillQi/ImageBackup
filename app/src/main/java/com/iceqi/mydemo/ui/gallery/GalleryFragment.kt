@@ -1,7 +1,6 @@
 package com.iceqi.mydemo.ui.gallery
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -13,12 +12,10 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.*
 import android.widget.AdapterView
-import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.view.get
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.loader.app.LoaderManager
@@ -28,15 +25,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.iceqi.mydemo.R
 import com.iceqi.mydemo.databinding.FragmentGalleryBinding
 import com.iceqi.mydemo.databinding.GalleryRowBinding
-import com.iceqi.mydemo.ui.common.AsyncImageLoader
 import com.iceqi.mydemo.ui.common.ImageUploadService
 import com.iceqi.mydemo.ui.common.UPLoadTaskConfigStore
 import com.iceqi.mydemo.ui.home.ImageList
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import java.io.File
+import kotlinx.coroutines.*
 
 
 // check getCount multi times
@@ -79,6 +71,7 @@ class GalleryFragment : Fragment() {
         binding.albums.adapter = albumsAdapter
 
         binding.albums.onItemSelectedListener = OnAlbumSelected()
+        setHasOptionsMenu(true)
 
         val b = requireActivity().applicationContext.checkSelfPermission(
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -97,11 +90,19 @@ class GalleryFragment : Fragment() {
             }
             l.launch("android.permission.WRITE_EXTERNAL_STORAGE")
         }
+
         return binding.root
     }
 
+//    private fun loadGalleryListView(){
+//        val gl = GalleryList()
+//        childFragmentManager.beginTransaction().let {
+//            it.add(R.id.container_fragment, gl)
+//            it.commit()
+//        }
+//    }
+
     private fun loadImageListView(){
-        setHasOptionsMenu(true)
         imageList.enableMultiSelMode = true
         childFragmentManager.beginTransaction().let {
             it.add(R.id.container_fragment, imageList)

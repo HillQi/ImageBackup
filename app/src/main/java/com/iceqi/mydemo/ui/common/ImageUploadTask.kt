@@ -77,25 +77,32 @@ class ImageUploadTask {
                     taskHandler.onError(ctx.resources.getString(R.string.ftp_login_failed))}
         }
         if(!cancelled) {
-            ftp.makeDirectories(files[0].parent)
+            try {
+                ftp.makeDirectories(files[0].parent)
 
-            for((i, f) in files.withIndex()) {
-                if(cancelled) break
-                if(!f.isFile)
-                    continue
-                val s = f.inputStream()
-                ftp.upload(f.name, s) { msg ->
-                    taskHandler.onError(msg)
-                    cancelled = true
-                }
-                try {
-                    s.close()
-                }catch (e : Exception){
+                for((i, f) in files.withIndex()) {
+                    if(cancelled)
+                        break
+                    if(!f.isFile)
+                        continue
+                    val s = f.inputStream()
+                    ftp.upload(f.name, s) { msg ->
+                        taskHandler.onError(msg)
+                        cancelled = true
+                    }
+                    try {
+                        s.close()
+                    }catch (e : Exception){
 
+                    }
+                    if(cancelled)
+                        break
+                    updateLastSyncTime(f)
+                    taskHandler.onProgress(i, files.size)
                 }
-                if(cancelled) break
-                updateLastSyncTime(f)
-                taskHandler.onProgress(i, files.size)
+            }
+            catch (t : Throwable)
+            {
             }
 
             ftp.disconnect()

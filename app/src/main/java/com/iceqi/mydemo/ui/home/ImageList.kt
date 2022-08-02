@@ -34,6 +34,9 @@ class ImageList : Fragment() {
         field = path
         albumTitle = path.split("/").last()
     }
+
+
+
     var enableMultiSelMode = false
     val sortStatus = SortStatus()
     var albumTitle : String? = null
@@ -68,6 +71,12 @@ class ImageList : Fragment() {
 
         LoaderManager.getInstance(this).initLoader(1, null, imgAdapter)
         return binding!!.root
+    }
+
+    override fun onDestroyView() {
+        imgAdapter.clear()
+
+        super.onDestroyView()
     }
 
     override fun onResume() {
@@ -227,6 +236,10 @@ class ImageList : Fragment() {
 
         init{
             super.setHasStableIds(true)
+        }
+
+        fun clear(){
+            imageCursor?.close()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {

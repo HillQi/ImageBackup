@@ -3,7 +3,9 @@ package com.iceqi.mydemo.ui.common
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTPReply
+import org.apache.tools.ant.taskdefs.Java
 import java.io.InputStream
+import java.nio.charset.StandardCharsets
 
 // Implement a common FTP client
 class FTPClient {
@@ -28,7 +30,9 @@ class FTPClient {
      */
     fun login(errHandle : (msg : String) -> Unit) : Boolean{
         try {
+            ftp.bufferSize = 1024000
             ftp.controlEncoding = "UTF-8"
+
             if(port > -1)
                 ftp.connect(ip, port)
             else
@@ -44,8 +48,8 @@ class FTPClient {
                 }
             }
             ftp.setFileType(FTP.BINARY_FILE_TYPE)
-            ftp.enterLocalActiveMode()
-
+            ftp.enterLocalPassiveMode()
+            ftp.doCommand("opts", "utf8 on")
             login = true
             return true
         }catch (e : Exception){
