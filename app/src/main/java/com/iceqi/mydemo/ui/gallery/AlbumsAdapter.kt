@@ -25,16 +25,14 @@ class  AlbumsAdapter : BaseAdapter(), LoaderManager.LoaderCallbacks<Cursor> {
     lateinit var resources : Resources
     lateinit var albums : View
     var items : Array<String> = arrayOf()
+    private val defaultItems = arrayOf("All pictures", "Camera", "Screenshots", "bluetooth")
 
     override fun getCount(): Int {
-        return items.size + 1
+        return items.size + defaultItems.size
     }
 
     override fun getItem(position: Int): Any {
-        if(position == 0)
-            return ""
-        else
-            return items[position-1]
+        return getItemText(position)
     }
 
     override fun getItemId(position: Int): Long {
@@ -42,7 +40,7 @@ class  AlbumsAdapter : BaseAdapter(), LoaderManager.LoaderCallbacks<Cursor> {
     }
 
     private fun genItemView(context : Context) : LinearLayout {
-        var t : TextView = TextView(context)
+        val t : TextView = TextView(context)
         val params = ViewGroup.MarginLayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             dpToPx(30)
@@ -61,7 +59,7 @@ class  AlbumsAdapter : BaseAdapter(), LoaderManager.LoaderCallbacks<Cursor> {
         return l
     }
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var l : LinearLayout = if(convertView == null)
+        val l : LinearLayout = if(convertView == null)
             genItemView(parent!!.context)
         else
             convertView as LinearLayout
@@ -78,10 +76,10 @@ class  AlbumsAdapter : BaseAdapter(), LoaderManager.LoaderCallbacks<Cursor> {
     }
 
     fun getItemText (position : Int): String{
-        return if (position == 0)
-            resources.getString(R.string.pic_album_all)
+        return if(position < defaultItems.size)
+            defaultItems[position]
         else
-            items[position - 1]
+            items[position - defaultItems.size]
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
@@ -102,9 +100,11 @@ class  AlbumsAdapter : BaseAdapter(), LoaderManager.LoaderCallbacks<Cursor> {
         if(data.isFirst) {
             val h = HashSet<String>()
             do {
-                h.add(data.getString(0))
+                val s = data.getString(0)
+                if(!defaultItems.contains(s))
+                    h.add(s)
             } while (!data.isLast && data.moveToNext())
-            items = h.toArray(items)
+            items = h.toTypedArray()
             items.sort()
             notifyDataSetChanged()
         }

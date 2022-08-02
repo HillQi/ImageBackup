@@ -279,18 +279,6 @@ class GalleryFragment : Fragment() {
         super.onDestroyView()
     }
 
-    inner class ImageViewHolder(view: GalleryRowBinding) : RecyclerView.ViewHolder(view.root) {
-        val c1 = view.galleryRowCheck1
-        val c2 = view.galleryRowCheck2
-        val c3 = view.galleryRowCheck3
-        val c4 = view.galleryRowCheck4
-
-        val v1: ImageView = view.galleryRowPic1
-        val v2: ImageView = view.galleryRowPic2
-        val v3: ImageView = view.galleryRowPic3
-        val v4: ImageView = view.galleryRowPic4
-    }
-
     private fun setupFTP(){
         val ftp = FTPServerSetup()
         ftp.ctx = requireContext()
@@ -301,7 +289,6 @@ class GalleryFragment : Fragment() {
         ftp.start()
     }
 
-    // TODO abstract this
     fun genCursorLoader(isForUpload : Boolean, albumTitle : String?) : CursorLoader {
         var selection : String? = null
         var selArgs : Array<String>? = null
