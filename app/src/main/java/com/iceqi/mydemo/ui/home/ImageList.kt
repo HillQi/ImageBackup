@@ -1,7 +1,10 @@
 package com.iceqi.mydemo.ui.home
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.database.Cursor
 import android.os.Build
 import android.os.Bundle
@@ -34,6 +37,8 @@ class ImageList : Fragment() {
         field = path
         albumTitle = path.split("/").last()
     }
+    var onMultiSelect : (() -> Unit)? = null
+    var onMultiSelectCancelled : (() -> Unit)? = null
 
 
 
@@ -41,13 +46,14 @@ class ImageList : Fragment() {
     val sortStatus = SortStatus()
     var albumTitle : String? = null
     var multiSelMode : Boolean = false
-    val multiSelImgs = HashSet<String>()
+    val multiSelImgs = HashMap<String, Int>()
 
     private lateinit var binding: ImageListViewBinding
     private val imgAdapter: ImageAdapter = ImageAdapter()
     private val longClickListener = LongClickListener()
     private val clickListener = ClickListener()
     lateinit var imgs : Array<String>
+    lateinit var imgIds : Array<Int>
     private val aImageLoader = AsyncImageLoader()
 
     override fun onCreateView(
@@ -70,6 +76,7 @@ class ImageList : Fragment() {
 //        }
 
         LoaderManager.getInstance(this).initLoader(1, null, imgAdapter)
+//        context?.registerReceiver(Receiver(), IntentFilter.create(null, "image/*"))
         return binding!!.root
     }
 
@@ -83,7 +90,7 @@ class ImageList : Fragment() {
         binding.root.isFocusableInTouchMode = true
         binding.root.requestFocus()
         binding.root.setOnKeyListener { _, keyCode, _ ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && multiSelMode) {
+            if (keyCode == KeyEvent.KEYCODE_BACK && isMultiSelMode()) {
                 exitMultiSelMode()
                 return@setOnKeyListener true
             }else if(onGoBack != null){
@@ -110,17 +117,30 @@ class ImageList : Fragment() {
         multiSelMode = false
         multiSelImgs.clear()
         binding.root.post{imgAdapter.notifyDataSetChanged()}
+        onMultiSelectCancelled?.let { it() }
+    }
+
+    private fun enterMultiSelMode(){
+        multiSelMode = true
+        onMultiSelect?.let { it() }
+    }
+
+    private fun isMultiSelMode() : Boolean {
+        return multiSelMode
     }
 
     private fun loadImgPath(data : Cursor){
         val path = arrayOfNulls<String>(data.count)
+        val ids = arrayOfNulls<Int>(data.count)
         data.moveToFirst()
         for(i in path.indices){
             path[i] = data.getString(0)
+            ids[i] = data.getInt(1)
             data.moveToNext()
         }
 
         imgs = path as Array<String>
+        imgIds = ids as Array<Int>
     }
 
     fun displayImage(tag : ImageViewTag){
@@ -189,11 +209,11 @@ class ImageList : Fragment() {
             if(tag.path == null)
                 return
 
-            if(multiSelMode){
+            if(isMultiSelMode()){
                 if(multiSelImgs.contains(tag.path)){
                     multiSelImgs.remove(tag.path)
                 }else{
-                    multiSelImgs.add(tag.path!!)
+                    multiSelImgs[tag.path!!] = imgIds[tag.position]
                 }
                 if(v !is CheckBox)
                     tag.check.isChecked = !tag.check.isChecked
@@ -207,12 +227,14 @@ class ImageList : Fragment() {
     inner class LongClickListener : View.OnLongClickListener{
         @SuppressLint("NotifyDataSetChanged")
         override fun onLongClick(v: View): Boolean {
-            if( !enableMultiSelMode || albumTitle == null)
+            if( isMultiSelMode() || albumTitle == null)
                 return true
-
-            val path: String = (v.tag as ImageViewTag).path ?: return false
-            multiSelMode = true
-            multiSelImgs.add(path)
+            (v.tag as ImageViewTag).let {
+                if(it.path == null)
+                    return false
+                multiSelImgs[it.path!!] = imgIds[it.position]
+            }
+            enterMultiSelMode()
             imgAdapter.notifyDataSetChanged()
             return true
         }
@@ -305,11 +327,13 @@ class ImageList : Fragment() {
                     }
                     tag.position = c.position
                     hasMore = c.moveToNext()
-                    selArray[i].isVisible = multiSelMode
+                    selArray[i].isVisible = isMultiSelMode()
                 }
 
-                if(multiSelMode)
+                if(selArray[i].isChecked || isMultiSelMode()) {
                     selArray[i].isChecked = multiSelImgs.contains(tag.path)
+                    selArray[i].jumpDrawablesToCurrentState()
+                }
             }
         }
 
@@ -352,5 +376,13 @@ class ImageList : Fragment() {
 
         override fun onLoaderReset(loader: Loader<Cursor>) {
         }
+    }
+
+    inner class Receiver : BroadcastReceiver(){
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            val a = p0
+            val b = a
+        }
+
     }
 }
