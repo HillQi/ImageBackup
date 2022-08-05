@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.database.Cursor
 import android.os.Build
 import android.os.Bundle
@@ -52,7 +51,7 @@ class ImageList : Fragment() {
     private val imgAdapter: ImageAdapter = ImageAdapter()
     private val longClickListener = LongClickListener()
     private val clickListener = ClickListener()
-    lateinit var imgs : Array<String>
+    lateinit var imgPaths : Array<String>
     lateinit var imgIds : Array<Int>
     private val aImageLoader = AsyncImageLoader()
 
@@ -107,6 +106,18 @@ class ImageList : Fragment() {
         exitMultiSelMode()
         LoaderManager.getInstance(this).restartLoader(1, null, imgAdapter)
     }
+
+    fun selectAllImages(){
+        for(i in imgPaths.indices)
+            multiSelImgs[imgPaths[i]] = imgIds[i]
+        binding.root.post{imgAdapter.notifyDataSetChanged()}
+    }
+
+    fun clearMultiSelect(){
+        multiSelImgs.clear()
+        binding.root.post{imgAdapter.notifyDataSetChanged()}
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -139,13 +150,13 @@ class ImageList : Fragment() {
             data.moveToNext()
         }
 
-        imgs = path as Array<String>
+        imgPaths = path as Array<String>
         imgIds = ids as Array<Int>
     }
 
     fun displayImage(tag : ImageViewTag){
         val intent = Intent(this.context, ImagePageDisplay::class.java).apply{
-            putExtra(EXTRA_MSG_IMAGE_PATH, imgs)
+            putExtra(EXTRA_MSG_IMAGE_PATH, imgPaths)
             putExtra(EXTRA_MSG_CURRENT_IMAGE_INDEX, tag.position)
         }
 

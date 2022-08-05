@@ -110,7 +110,10 @@ class GalleryFragment : Fragment() {
         binding.multiSelect.let {
             it.setImageBitmap((it.drawable as BitmapDrawable).bitmap)
             it.setOnClickListener {
-                Toast.makeText(context, "click selAll", Toast.LENGTH_SHORT).show()
+                if(imageList.multiSelImgs.size != imageList.imgPaths.size)
+                    imageList.selectAllImages()
+                else
+                    imageList.clearMultiSelect()
             }
         }
 
