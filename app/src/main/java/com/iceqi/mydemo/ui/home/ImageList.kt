@@ -44,7 +44,7 @@ class ImageList : Fragment() {
 
     var enableMultiSelMode = false
     val sortStatus = SortStatus()
-    var albumTitle : String? = null
+    lateinit var albumTitle : String
     var multiSelMode : Boolean = false
     val multiSelImgs = HashMap<String, Int>()
 
@@ -153,13 +153,13 @@ class ImageList : Fragment() {
     }
 
     // TODO abstract this
-    fun genCursorLoader(isForUpload : Boolean, albumTitle : String?) : CursorLoader {
+    fun genCursorLoader(isForUpload : Boolean, albumTitle : String) : CursorLoader {
         var selection : String? = null
         var selArgs : Array<String>? = null
-        if(albumTitle != null){
+//        if(albumTitle != null){
             selection = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + "=?"
             selArgs = arrayOf(albumTitle)
-        }
+//        }
 
         var order: String
 
@@ -227,7 +227,7 @@ class ImageList : Fragment() {
     inner class LongClickListener : View.OnLongClickListener{
         @SuppressLint("NotifyDataSetChanged")
         override fun onLongClick(v: View): Boolean {
-            if( isMultiSelMode() || albumTitle == null)
+            if( isMultiSelMode())
                 return true
             (v.tag as ImageViewTag).let {
                 if(it.path == null)
@@ -316,7 +316,7 @@ class ImageList : Fragment() {
                     tag.position = -1
                 }else {
                     val p = c.getString(0)
-                    if(c.position == 0 && albumTitle != null)
+                    if(c.position == 0)
                         curFolderPath = File(p).parentFile.path
 
                     if(tag.path == null

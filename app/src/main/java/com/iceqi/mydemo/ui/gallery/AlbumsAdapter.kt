@@ -25,7 +25,7 @@ class  AlbumsAdapter : BaseAdapter(), LoaderManager.LoaderCallbacks<Cursor> {
     lateinit var resources : Resources
     lateinit var albums : View
     var items : Array<String> = arrayOf()
-    private val defaultItems = arrayOf("All pictures", "Camera", "Screenshots", "bluetooth")
+    private val defaultItems = arrayOf("Camera", "Screenshots", "bluetooth")
 
     override fun getCount(): Int {
         return items.size + defaultItems.size

@@ -181,6 +181,7 @@ class GalleryFragment : Fragment() {
 
     private fun loadImageListView() {
         imageList.enableMultiSelMode = true
+        imageList.albumTitle = albumsAdapter.getItemText(0)
         childFragmentManager.beginTransaction().let {
             it.add(R.id.container_fragment, imageList)
             it.commit()
@@ -220,10 +221,7 @@ class GalleryFragment : Fragment() {
         }
 
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            val t = if (position == 0)
-                null
-            else
-                albumsAdapter.getItemText(position)
+            val t = albumsAdapter.getItemText(position)
             if (binding.albums.tag as? String != t) {
                 binding.albums.tag = t
                 imageList.albumTitle = t
