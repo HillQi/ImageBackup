@@ -128,6 +128,9 @@ class GalleryFragment : Fragment() {
     }
 
     private fun deleteImages() {
+        if(imageList.multiSelImgs.size == 0)
+            return
+
         val paths = imageList.multiSelImgs.keys.toTypedArray()
         for(p in paths){
             val f = File(p)
@@ -158,6 +161,9 @@ class GalleryFragment : Fragment() {
      * Share current multi selected images
      */
     private fun shareImages(){
+        if(imageList.multiSelImgs.size == 0)
+            return
+
         val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
         shareIntent.type = "image/*"//Change JPEG to PNG if necessary
         val al = ArrayList<Uri>()
