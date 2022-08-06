@@ -17,16 +17,14 @@
             />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/remove"
+            android:id="@+id/multi_function"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginBottom="16dp"
-            app:srcCompat="@android:drawable/ic_menu_delete"
+            app:srcCompat="@android:drawable/ic_menu_upload"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:visibility="invisible"
-
             />
 
 

@@ -317,7 +317,7 @@ class GalleryFragment : Fragment() {
                 }
             }
         }
-        menu[5].title = setColor(R.string.menu_gallery_start_batch_upload, menu[3].isEnabled)
+        menu[5].title = setColor(R.string.menu_gallery_start_batch_upload, menu[5].isEnabled)
 
         super.onPrepareOptionsMenu(menu)
     }

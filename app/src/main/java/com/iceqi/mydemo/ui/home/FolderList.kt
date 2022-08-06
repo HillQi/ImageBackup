@@ -1,6 +1,7 @@
 package com.iceqi.mydemo.ui.home
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.iceqi.mydemo.R
 import com.iceqi.mydemo.databinding.FolderListRowBinding
 import com.iceqi.mydemo.databinding.FolderListViewBinding
+import com.iceqi.mydemo.ui.common.ImageUploadService
 import com.iceqi.mydemo.ui.common.UPLoadTaskConfigStore
 
 class FolderList : Fragment() {
@@ -46,21 +48,29 @@ class FolderList : Fragment() {
                 }else
                     return@setOnKeyListener false
             }
-            it.remove.setOnClickListener {
-                val uCfg = UPLoadTaskConfigStore()
-                uCfg.ctx = requireContext()
-                uCfg.open()
-
-                val folders = ArrayList<String>(selFolderIndex.size)
-                for(i in selFolderIndex)
-                    folders.add(fa.folders?.get(i)!!)
-                uCfg.removePath(folders.toTypedArray())
-                exitMultiSelMode()
-                fa.folders = uCfg.getPaths()
-                fa.notifyDataSetChanged()
+            it.multiFunction.setOnClickListener {
+                onMultiFunctionClicked()
             }
         }
         return binding!!.root
+    }
+
+    private fun onMultiFunctionClicked(){
+        if(multiSelMode) {
+            val uCfg = UPLoadTaskConfigStore()
+            uCfg.ctx = requireContext()
+            uCfg.open()
+
+            val folders = ArrayList<String>(selFolderIndex.size)
+            for (i in selFolderIndex)
+                folders.add(fa.folders?.get(i)!!)
+            uCfg.removePath(folders.toTypedArray())
+            exitMultiSelMode()
+            fa.folders = uCfg.getPaths()
+            fa.notifyDataSetChanged()
+        }else
+            context?.startService(Intent(context, ImageUploadService::class.java))
+
     }
 
     private fun updateAdapter(adapter : FolderAdapter){
@@ -71,14 +81,14 @@ class FolderList : Fragment() {
 
     private fun exitMultiSelMode(){
         multiSelMode = false
-        binding?.remove?.visibility = View.INVISIBLE
+        binding?.multiFunction?.setImageResource(android.R.drawable.ic_menu_upload)
 
         selFolderIndex.clear()
     }
 
     private fun beginMultiSelMode(){
         multiSelMode = true
-        binding?.remove?.visibility = View.VISIBLE
+        binding?.multiFunction?.setImageResource(android.R.drawable.ic_menu_delete)
     }
 
     inner class OnClick : View.OnClickListener{
