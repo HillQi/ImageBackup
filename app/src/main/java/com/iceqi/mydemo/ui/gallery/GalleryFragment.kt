@@ -297,13 +297,10 @@ class GalleryFragment : Fragment() {
             menu[0].isEnabled = false
             menu[1].isEnabled = false
         }
-        menu[2].isEnabled = binding.albums.selectedItemPosition != 0
-
         menu[0].title = setColor(bt, menu[0].isEnabled)
         menu[1].title = setColor(bn, menu[1].isEnabled)
         menu[2].title = setColor(R.string.menu_gallery_upload, menu[2].isEnabled)
         menu[3].title = setColor(R.string.menu_gallery_setup_ftp, menu[3].isEnabled)
-        menu[4].isVisible = binding.albums.selectedItemPosition != 0
         if (menu[4].isVisible) {
             if (isFolderAddedToUploadTask(imageList.curFolderPath)) {
                 menu[4].title =
