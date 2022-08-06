@@ -32,6 +32,7 @@ import com.iceqi.mydemo.ui.common.UPLoadTaskConfigStore
 import com.iceqi.mydemo.ui.home.ImageList
 import kotlinx.coroutines.*
 import java.io.File
+import kotlin.system.exitProcess
 
 
 // check getCount multi times
@@ -67,29 +68,22 @@ class GalleryFragment : Fragment() {
     ): View {
         galleryViewModel = ViewModelProvider(this)[GalleryViewModel::class.java]
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
-        albumsAdapter.resources = resources
-        albumsAdapter.applicatoinContext = requireActivity().applicationContext
-        albumsAdapter.albums = binding.albums
-        binding.albums.adapter = albumsAdapter
-
-        binding.albums.onItemSelectedListener = OnAlbumSelected()
-        setHasOptionsMenu(true)
-
         val b = requireActivity().applicationContext.checkSelfPermission(
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
         if (b == PackageManager.PERMISSION_GRANTED) {
-            LoaderManager.getInstance(this).initLoader(2, null, albumsAdapter)
-            loadImageListView()
+            loadViewComponents()
         } else if (b == PackageManager.PERMISSION_DENIED) {
             val l = registerForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) {
                 if (it) {
-                    LoaderManager.getInstance(this).initLoader(2, null, albumsAdapter)
-                    loadImageListView()
+                    loadViewComponents()
+                }else{
+                    exitProcess(0)
                 }
             }
+
             l.launch("android.permission.WRITE_EXTERNAL_STORAGE")
         }
 
@@ -118,6 +112,19 @@ class GalleryFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun loadViewComponents(){
+        albumsAdapter.resources = resources
+        albumsAdapter.applicatoinContext = requireActivity().applicationContext
+        albumsAdapter.albums = binding.albums
+        binding.albums.adapter = albumsAdapter
+
+        binding.albums.onItemSelectedListener = OnAlbumSelected()
+        setHasOptionsMenu(true)
+
+        LoaderManager.getInstance(this).initLoader(2, null, albumsAdapter)
+        loadImageListView()
     }
 
     private fun deleteImages() {
@@ -189,14 +196,14 @@ class GalleryFragment : Fragment() {
             it.add(R.id.container_fragment, imageList)
             it.commit()
         }
-        imageList.onMultiSelect = ::onMultiSelModeChanged
-        imageList.onMultiSelectCancelled = ::onMultiSelModeChanged
+        imageList.onMultiSelect = {onMultiSelModeChanged(true)}
+        imageList.onMultiSelectCancelled = { onMultiSelModeChanged(false) }
 
     }
 
-    private fun onMultiSelModeChanged() {
+    private fun onMultiSelModeChanged(ifMultiSel : Boolean) {
         binding.options.let {
-            if (it.visibility == View.INVISIBLE)
+            if (ifMultiSel)
                 it.visibility = View.VISIBLE
             else
                 it.visibility = View.INVISIBLE
