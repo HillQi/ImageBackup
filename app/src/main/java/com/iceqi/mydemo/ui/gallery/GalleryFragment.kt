@@ -258,26 +258,6 @@ class GalleryFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-
-    private fun setColor(resourceId: Int, enable: Boolean): SpannableString {
-        return setColor(resources.getString(resourceId), enable)
-    }
-
-    private fun setColor(str: String, enable: Boolean): SpannableString {
-        val s = SpannableString(str)
-        val color = if (enable)
-            Color.WHITE
-        else
-            Color.GRAY
-        s.setSpan(
-            ForegroundColorSpan(color),
-            0,
-            s.length,
-            0
-        )
-        return s
-    }
-
     override fun onPrepareOptionsMenu(menu: Menu) {
         var bn = resources.getString(R.string.menu_gallery_sort_by_name)
         var bt = resources.getString(R.string.menu_gallery_sort_by_time)
@@ -293,32 +273,28 @@ class GalleryFragment : Fragment() {
                 strDown
         }
 
-        if (imageList.multiSelMode) {
-            menu[0].isEnabled = false
-            menu[1].isEnabled = false
-        }
-        menu[0].title = setColor(bt, menu[0].isEnabled)
-        menu[1].title = setColor(bn, menu[1].isEnabled)
-        menu[2].title = setColor(R.string.menu_gallery_upload, menu[2].isEnabled)
-        menu[3].title = setColor(R.string.menu_gallery_setup_ftp, menu[3].isEnabled)
+        menu[0].isEnabled = !imageList.multiSelMode
+        menu[1].isEnabled = !imageList.multiSelMode
+        menu[0].title = bt
+        menu[1].title = bn
+        menu[2].title = resources.getString(R.string.menu_gallery_upload)
+        menu[3].title = resources.getString(R.string.menu_gallery_setup_ftp)
         if (menu[4].isVisible) {
             if (isFolderAddedToUploadTask(imageList.curFolderPath)) {
-                menu[4].title =
-                    setColor(R.string.menu_gallery_do_not_upload_folder, menu[4].isEnabled)
+                menu[4].title = resources.getString(R.string.menu_gallery_do_not_upload_folder)
                 menu[4].setOnMenuItemClickListener {
                     removeFolderFromUploadTask(imageList.curFolderPath)
                     true
                 }
             } else {
-                menu[4].title = setColor(R.string.menu_gallery_upload_folder, menu[4].isEnabled)
+                menu[4].title = resources.getString(R.string.menu_gallery_upload_folder)
                 menu[4].setOnMenuItemClickListener {
                     addFolderToUploadTask(imageList.curFolderPath)
                     true
                 }
             }
         }
-        menu[5].title = setColor(R.string.menu_gallery_start_batch_upload, menu[5].isEnabled)
-
+        menu[5].title = resources.getString(R.string.menu_gallery_start_batch_upload)
         super.onPrepareOptionsMenu(menu)
     }
 
