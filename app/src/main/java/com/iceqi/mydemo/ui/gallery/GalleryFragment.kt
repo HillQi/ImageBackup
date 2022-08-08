@@ -424,8 +424,9 @@ class GalleryFragment : Fragment() {
     inner class UploadTask : LoaderManager.LoaderCallbacks<Cursor> {
         @RequiresApi(Build.VERSION_CODES.R)
         override fun onLoadFinished(p0: Loader<Cursor>, data: Cursor?) {
-            if (data == null || data.isClosed)
+            if (data == null || data.isClosed || data.count == 0)
                 return
+
 
             val fs = arrayOfNulls<String>(data.count)
             data.moveToFirst()

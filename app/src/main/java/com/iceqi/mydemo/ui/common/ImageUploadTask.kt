@@ -64,7 +64,8 @@ class ImageUploadTask {
             sortImages(images!!)
         }else{
             setImageFolder(folder!!)
-            sortImages(File(folder).listFiles())
+            val fs = File(folder).listFiles() ?: return
+            sortImages(fs)
         }
 
         cancelled = files.isEmpty()
