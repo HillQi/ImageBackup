@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/gallery_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/gallery_row_pic1"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginVertical="1dp"
+        android:src="@drawable/demo"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/count_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-50dp"
+        android:layout_marginLeft="20dp"
+        android:text="1,345" />
+
+    <TextView
+        android:id="@+id/folder_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-60dp"
+        android:layout_marginLeft="20dp"
+        android:text="Camera" />
+</LinearLayout>

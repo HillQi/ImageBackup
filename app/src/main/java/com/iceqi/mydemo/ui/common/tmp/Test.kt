@@ -47,3 +47,7 @@ class Test (n : String){
 inline fun <reified T> List<Any>.filterFruit(): List<T> {
     return this.filter { it is T }.map { it as T }
 }
+
+fun fff(){
+    val a = A()
+}

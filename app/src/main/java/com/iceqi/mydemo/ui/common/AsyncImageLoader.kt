@@ -39,8 +39,8 @@ class AsyncImageLoader {
                 if (!isActive)
                     return@out
                 var b: Bitmap? = null
-                if(isThumbnail)
-                    b = if(id == -1L) {
+                b = if(isThumbnail)
+                    if(id == -1L) {
                         ThumbnailUtils.createImageThumbnail(File(path), Size(100, 100), null)
                     }else{
                         MediaStore.Images.Thumbnails.getThumbnail(
@@ -48,9 +48,8 @@ class AsyncImageLoader {
                             id,
                             MediaStore.Images.Thumbnails.MICRO_KIND, null)
                     }
-
                 else
-                    b = BitmapFactory.decodeFile(path)
+                    BitmapFactory.decodeFile(path)
 
                 launch(Dispatchers.Main) {
                     if (isActive){

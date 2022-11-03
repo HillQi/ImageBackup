@@ -23,7 +23,8 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_alignRight="@+id/gallery_row_pic1"
-        android:layout_alignBottom="@+id/gallery_row_pic1"/>
+        android:layout_alignBottom="@+id/gallery_row_pic1"
+        />
 
 
 

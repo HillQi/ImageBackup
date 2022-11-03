@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/white"
+    >
+
+    <LinearLayout
+        android:id="@+id/parent1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:background="@drawable/folder_list_background"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_weight="1"
+
+        >
+        <ImageView
+            android:id="@+id/gallery_row_pic1"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/demo"
+            android:background="@drawable/folder_list_background"
+            />
+
+        <TextView
+            android:id="@+id/count1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-30dp"
+            android:layout_marginLeft="20dp"
+            android:text="1,345"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            />
+
+        <TextView
+            android:id="@+id/folder1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-40dp"
+            android:layout_marginLeft="20dp"
+            android:text="Camera"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/parent2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:background="@drawable/folder_list_background"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1">
+        <ImageView
+            android:id="@+id/gallery_row_pic2"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginVertical="1dp"
+            android:src="@drawable/demo"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/count2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-20dp"
+            android:layout_marginLeft="20dp"
+            android:text="1,345" />
+
+        <TextView
+            android:id="@+id/folder2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-40dp"
+            android:layout_marginLeft="20dp"
+            android:text="Camera" />
+    </LinearLayout>
+</LinearLayout>
